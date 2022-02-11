@@ -1,0 +1,25 @@
+<h1><%= account.description %> (<%= account.opened_on %> - <%= account.closed_on || 'now' %>)</h1>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Posting Date</th>
+    <th>Description</th>
+    <th>Debit</th>
+    <th>Credit</th>
+    <% if account.currency == "USD" %>
+      <th>Adjusted Amount</th>
+    <% end %>
+  </tr>
+  <% account.transactions.order(date: :asc).each do |transaction| %>
+  <tr>
+    <td><strong><a href="/date/<%= transaction.date %>"><%= transaction.date %></a></strong></td>
+    <td><strong><a href="/date/<%= transaction.posting_date %>"><%= transaction.posting_date %></a></strong></td>
+    <td><%= transaction.description %></td>
+    <td><%= transaction.debit if transaction.debit != 0 %></td>
+    <td><%= transaction.credit if transaction.credit != 0 %></td>
+    <% if account.currency == "USD" %>
+      <td><%= transaction.adjusted_amount %></td>
+    <% end %>
+  </tr>
+  <% end %>
+</table>

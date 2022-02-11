@@ -1,0 +1,19 @@
+<td class="time cf<% if show_time_zone %> show_time_zone<% end %>" style="left: <%= index * 142 %>px; <% if show_weather %>height: 140px;<% end %>">
+  <% alt_time = Time.at(epoch).in_time_zone(in_time_zone) %>
+  <% date_difference = (alt_time.to_date - @date).to_i %>
+  <% if show_weather && @weather[location] && @weather[location][epoch] %>
+    <%= File.read(Rails.root.to_s + '/public' + get_weather_icon(@weather[location][epoch])).html_safe %> 
+    <!-- <%= @weather[location][epoch].description %> -->
+  <% end %>
+  <div>
+    <time>
+      <%= Time.at(epoch).in_time_zone(in_time_zone).strftime("%H:%M:%S") %><% if date_difference != 0 %><% if date_difference >= 1 %>+<% end %><%= date_difference %><% end %>
+      <% if show_weather && @weather[location] && @weather[location][epoch] %>
+        <span class="weather"><%= @weather[location][epoch].feels_like %> °C</span>
+      <% end %>
+      <% if defined?(show_time_zone) && show_time_zone %>
+        <span><%= location.split(', ')[0] %></span>
+      <% end %>
+    </time>
+  </div>
+</td>

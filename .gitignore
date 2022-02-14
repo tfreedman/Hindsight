@@ -44,3 +44,6 @@ yarn-debug.log*
 
 # Transcoded images
 /photocache
+
+# Address Book
+/contacts.yml

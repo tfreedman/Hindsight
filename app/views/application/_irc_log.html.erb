@@ -1,0 +1,10 @@
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+    <small><%= event[:content][:username] %></small>
+  </p>
+</header>
+<div class="card-body">
+  <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+    <%= event[:content][:line] %>
+  </p>
+</div>

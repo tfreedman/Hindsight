@@ -1,0 +1,120 @@
+<header class="cf">
+  <div>
+    <h1><a href="/?start_date=<%= @date %>"><i class="fas fa-angle-double-left"></i> <%= @date.strftime("%A, %d %b %Y") %></a></h1>
+  </div>
+  <nav>
+    <a href="/date/<%= @date.yesterday %>"><i class="fas fa-angle-left"></i></a>
+    <a href="/date/<%= Date.today %>" class="today">Today</a>
+    <a href="/date/<%= @date.tomorrow %>"><i class="fas fa-angle-right"></i></a>
+  </nav>
+</header>
+<article class="cf">
+  <section class="items left">
+    <% @hours.each do |key, hour| %>
+      <div class="hour">
+        <div class="events">
+          <div class="gap">
+            <%= render 'application/time', epoch: key, location: 'Toronto, CA', show_weather: true, in_time_zone: 'America/Toronto', show_time_zone: true %>
+            <% alternate_time_zones(@date).each do |zone| %>
+              <%= render 'application/time', epoch: key, location: zone.formatted_name, show_weather: true, in_time_zone: zone.tz, show_time_zone: true %>
+            <% end %>
+            <div class="details"></div>
+          </div>
+          <% hour.each do |event| %>
+            <div class="<%= event[:type].gsub(' ', '_') %>">
+              <%= render 'application/time', epoch: event[:sort_time], show_weather: false, in_time_zone: 'America/Toronto', show_time_zone: false %>
+              <% alternate_time_zones(@date).each do |zone| %>
+                <%= render 'application/time', epoch: event[:sort_time], show_weather: false, in_time_zone: zone.tz, show_time_zone: false %>
+              <% end %>
+              <div class="details" style="<% if colors(event[:type]) %>border-color: <%= colors(event[:type]) %>;<% end %> <% if colors(event[:type]) == 'transparent' %>background: <%= colors2(@event_groups[event[:type]]) %>;<% end %>" <% if event[:group] %>data-group="<%= event[:group] %>"<% end %> <% if colors(event[:type]) == "transparent" %>data-column="<%= @event_groups[event[:type]] %>"<% end %>>
+                <% if event[:type] == "presto_trip" %>
+                  <%= event[:content][:location] %> - <%= event[:content][:kind] %>
+                <% elsif event[:type] == "fitbit_measurement" %>
+                  <%= ((event[:content][:weight] / 1000.0) * 2.2).round(2) %> lb
+                <% elsif event[:type] == "github_commit" %>
+                  <a href="<%= event[:content][:html_url] %>">
+                    <i class="fab fa-github"></i>
+                  </a>
+                  <%= event[:content][:commit]["author"]["name"] %> (<%= event[:content][:repo] %>) : <%= event[:content][:commit]["message"] %>
+                <% elsif event[:type] == "photo_album" %>
+                  <%= event[:content][:name] %>
+                <% elsif event[:type].start_with?("matrix_event") %>
+                  <%= render 'application/matrix_event', post: event %>
+                <% elsif event[:type] == "bikeshare_trip" %>
+                  <%= event[:content][:start_station] %> -> <%= event[:content][:end_station] %>
+                <% elsif event[:type] == "facebook_message" %>
+                  <p class="<% if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>sent<% else %>received<% end %>">
+                    <small><%= event[:content][:sender_name] %></small>
+                    <br />
+                    <%= event[:content][:content] %>
+                  </p>
+                <% elsif event[:type] == "windows_phone_sms" %>
+                  <p class="<% if event[:content]['is_sent'] %>sent<% else %>received<% end %>">
+                    <small><%= event[:content][:real_name] %> (<%= event[:content][:phone_number] %>):</small>
+                    <br />
+                    <%= event[:content]["body"] %>
+                  </p>
+                <% elsif event[:type] == "android_call" %>
+                  <%= event[:content][:contact_name] %> (<%= event[:content][:number] %>)
+                <% elsif event[:type] == "android_sms" %>
+                  <p class="<% if event[:content][:sms_type] == "2" %>sent<% else %>received<% end %>">
+                    <small><% if event[:content][:sms_type] == "2" %>> <% end %><%= event[:content][:contact_name] %> (<%= event[:content][:address] %>):</small>
+                    <br />
+                    <%= event[:content][:body] %>
+                  </p>
+                <% elsif event[:type].start_with?("calendar_event") %>
+                  <%= event[:content][:summary] %>
+                <% elsif event[:type].start_with?("hangouts_event_") %>
+                  <small><%= event[:content][:real_name] %>:</small>
+                  <p>
+                    <% event[:content][:chat_message]["message_content"]["segment"].each do |segment| %>
+                      <%= segment["text"] %>
+                    <% end %>
+                  </p>
+                <% elsif event[:type] == 'photo' %>
+                  <p class="neutral">
+                    <a data-fancybox href="/photos/<%= event[:content][:id] %>/preview"><img src="/photos/<%= event[:content][:id] %>/thumbnail" /></a>
+                    <small>
+                      <%= event[:caption].html_safe %>
+                    </small>
+                  </p>
+                <% else %>
+                  <%= event[:type] %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <h2 class="received">
+      <a href="/date/<%= @date + 1 %>?start_date=<%= @date + 1 %>">Tomorrow</a>
+    </h2>
+  </section>
+  <%= render 'application/aside' %>
+</article>
+<script>
+  function redraw() {
+    details = document.querySelectorAll('.details');
+    for (var i = 0; i < details.length; i++) {
+      if (typeof details[i].dataset.group !== 'undefined') {
+        selector = document.querySelectorAll('[data-group=' + details[i].dataset.group + ']');
+        if (typeof selector[1] !== 'undefined') {
+          start_event = selector[0];
+          end_event = selector[1];
+          selector[0].style.height = (end_event.getBoundingClientRect().top - start_event.getBoundingClientRect().top) + 'px';
+          start_event.style.left = start_event.getBoundingClientRect().left + 'px';
+          start_event.style.width = (start_event.getBoundingClientRect().right - start_event.getBoundingClientRect().left) + 'px';
+          start_event.style.position = 'absolute';
+          start_event.style.zIndex = -1;
+          end_event.style.height = '1px';
+        }
+      }
+    }
+    for (var i = 0; i < details.length; i++) {
+      details[i].style.marginLeft = (300 * details[i].dataset.column) + 'px';
+    }
+  }
+  window.addEventListener("load", redraw);
+  window.onresize = redraw;
+</script>

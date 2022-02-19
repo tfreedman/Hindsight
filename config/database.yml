@@ -30,17 +30,6 @@ lightroom:
   timeout: 5000
   database: '../Lightroom.lrcat'
 
-iot:
-  adapter: postgresql
-  pool: 8
-  timeout: 10000
-  database: <%= Hindsight::Application.credentials.iot_database_name %>
-  username: <%= Hindsight::Application.credentials.iot_database_username %>
-  password: <%= Hindsight::Application.credentials.iot_database_password %>
-  host: <%= Hindsight::Application.credentials.iot_database_host %>
-  port: <%= Hindsight::Application.credentials.iot_database_port %>
-  reconnect: true
-
 hindsight:
   adapter: postgresql
   pool: 8

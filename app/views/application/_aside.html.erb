@@ -1,0 +1,103 @@
+<aside class="left">
+  <div class="yesterday">
+    <a href="/date/<%= @date.yesterday %>"><i class="fas fa-angle-up"></i></a>
+  </div>
+  <header>
+    <div>
+      <h1><a href="/overview/<%= @date.year %>"><%= @date.strftime("%B %d") %><br /><%= @date.strftime("%Y") %></a></h1>
+    </div>
+    <nav style="display: none">
+      <a href="/date/<%= @date.yesterday %>"><i class="fas fa-angle-left"></i></a>
+      <a href="/date/<%= Date.today %>" class="today">Today</a>
+      <a href="/date/<%= @date.tomorrow %>"><i class="fas fa-angle-right"></i></a>
+  
+      &nbsp;
+    </nav>
+  </header>
+
+  <%= month_calendar do |date| %>
+    <a <% if @date.to_s == date.to_s %>class="selected-date" <% end %> href="/date/<%= date %>?start_date=<%= date %>"><%= date.day %></a>
+  <% end %>
+
+  <h2>On This Day:</h2>
+  <% @on_this_day.each do |key, array| %>
+    <% if key == :all_day_events && array.length > 0 %>
+      <h3>All-Day Events:</h3>
+      <ul>
+        <% array.each do |event| %>
+          <li class="<%= event[:type] %> details" style="border-top-color: <%= colors(event[:type]) %>">
+            <% if event[:type] == "Photo Albums" %>
+              <% photos = Photo.where("path LIKE ?", "%#{Hindsight::Application.credentials.photos_path}#{event[:content][:folder_name]}/%").order(path: :asc).all %>
+              <% group_name = 'photo_album_' + event[:content][:name] %>
+              <% if photos.count < 100 %>
+                <div class="card-body">
+                  <a data-fancybox-trigger="<%= group_name %>">
+                    <i class="fas fa-images"></i> <%= event[:content][:name] %> (<%= photos.count %>)
+                  </a>
+                  <% photos.each do |photo| %>
+                    <a data-fancybox="<%= group_name %>" href="/photos/<%= photo.id %>/preview">
+                      <img style="display: none" src="/photos/<%= photo.id %>/thumbnail" />
+                    </a>
+                  <% end %>
+                <% else %>
+                  <div class="card-body">
+                    <%= event[:content][:name] %>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="card-body">
+                <%= event[:content][:summary] %>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% elsif key == :financial_transactions %>
+      <h3>Financial Transactions:</h3>
+      <ul>
+        <% array.each do |event| %>
+          <li class="<%= event[:type] %> details" style="border-top-color: <%= colors(event[:type]) %>">
+            <div class="card-body">
+              <a data-fancybox href="javascript:;" data-src="#financial-statement">
+                <i class="fas fa-dollar-sign"></i> <%= event[:content][:description] %>
+                <% if event[:content][:debit] %>
+                  ($<%= '%.2f' % event[:content][:debit] %>)
+                <% end %>
+                <% if event[:content][:credit] %>
+                  ($<%= '%.2f' % event[:content][:credit] %>)
+                <% end %>
+              </a>
+              <div id="financial-statement" style="display: none">
+                <%= render 'application/financial_statement', account: event[:content].account %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% elsif key == :magazines %>
+      <h3>Magazines:</h3>
+      <ul>
+        <% array.each do |magazine| %>
+          <li class="magazine details" style="border-top-color: <%= colors('magazine') %>">
+            <div class="card-body">
+              <a target="_blank" href="<% if !magazine[:url].downcase.end_with?('pdf') %>https://villain.js.org/#/reader?src=<%= magazine[:url] %><% else %><%= magazine[:url] %><% end %>">
+                <i class="fas fa-book-open"></i> <%= magazine[:name] %>
+              </a>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <footer>
+    <% if @date.beginning_of_day >= Date.parse("2005-06-23").beginning_of_day %>
+      <a href="https://reddit.tylerfreedman.com/<%= @date %>/"><i class="fab fa-reddit"></i></a>
+      &nbsp;
+      <% if @date.beginning_of_day >= Date.parse("2007-02-19").beginning_of_day %>
+        <a href="https://news.ycombinator.com/front?day=<%= @date %>"><i class="fab fa-hacker-news-square"></i></a>
+      <% end %>
+    <% end %>
+  </footer>
+</aside>

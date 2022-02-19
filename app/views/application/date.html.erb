@@ -1,0 +1,236 @@
+<article class="cf">
+  <%= render 'application/aside' %>
+  <section class="items right">
+    <table>
+      <tr>
+        <th>&nbsp;</th>
+        <% alternate_time_zones(@date).each_with_index do |zone, index| %>
+          <th style="left: <%= (index + 1) * 144 %>px">&nbsp;</th>
+        <% end %>
+        <th><div style="width: 20px"></div></th>
+        <% @event_groups.each do |key, value| %>
+          <% if key.include?('matrix_event_') %>
+            <% room_title = MatrixRoom.where(room_id: key.gsub('matrix_event_', '')).first.name %>
+            <% if room_title == '' || room_title.nil? %>
+              <% room_title = (MatrixRoom.where(room_id: key.gsub('matrix_event_', '')).first.participants - [Hindsight::Application.credentials.mxid]).to_sentence.truncate(40) %>
+            <% end %>
+            <th><%= room_title %></th>
+          <% elsif key.start_with?('email_message') %>
+            <th><%= key.split('email_message_')[1] + ' (email)' %></th>
+          <% elsif key.include?('facebook_message_') %>
+            <th><%= key.gsub('facebook_message_', '') %></th>
+          <% elsif key.include?('pidgin_message_') %>
+            <th><%= key.gsub('pidgin_message_', '') %></th>
+          <% elsif key.include?('calendar_event_') %>
+            <th><%= key.gsub('calendar_event_', '').downcase.capitalize + ' (Calendar)' %></th>
+          <% elsif key.include?('adium_message_') %>
+            <th><%= key.gsub('adium_message_', '') %></th>
+          <% elsif key.include?('mirc_log_') %>
+            <th><%= key.gsub('mirc_log_', '') %></th>
+          <% elsif key.include?('hangouts_event_') %>
+            <th><%= (HangoutsConversation.where(conversation_id: key.gsub('hangouts_event_', '')).first.participant_data.pluck('fallback_name') - [Hindsight::Application.credentials.real_name]).to_sentence %></th>
+          <% elsif key.include?('android_sms_') %>
+            <th><%= key.gsub('android_sms_', '') + ' (SMS)' %></th>
+          <% elsif key.include?('windows_phone_sms_') %>
+            <th><%= key.gsub('windows_phone_sms_', '') + ' (SMS)' %></th>
+          <% elsif key.include?('xchat_log_') %>
+            <th><%= key.gsub('xchat_log_', '') %> (X-Chat)</th>
+          <% elsif key.include?('github_commit') %>
+            <th>GitHub Commits</th>
+          <% elsif key.include?('android_call') %>
+            <th>Call Log</th>
+          <% else %>
+            <th><%= key.gsub('matrix_event_', '') %></th>
+          <% end %>
+        <% end %>
+        <th>&nbsp;</th>
+      </tr>
+      <% even = true %>
+      <% @hours.each do |key, hour| %>
+          <% even = !even %>
+          <tr class="<% if even %>even<% else %>odd<% end %>">
+            <%= render 'application/time', epoch: key, location: Hindsight::Application.credentials.default_location, show_weather: true, in_time_zone: Hindsight::Application.credentials.default_time_zone, show_time_zone: true, index: 0 %>
+            <% alternate_time_zones(@date).each_with_index do |zone, index| %>
+              <%= render 'application/time', epoch: key, location: zone.formatted_name, show_weather: true, in_time_zone: zone.tz, show_time_zone: true, index: index + 1 %>
+            <% end %>
+            <% 0.upto(@event_groups.length + 1).each_with_index do |i| %>
+              <td></td>
+            <% end %>
+          </tr>
+          <% hour.each do |event| %>
+            <tr class="<%= event[:type].gsub(' ', '_') %> <% if even %>even<% else %>odd<% end %>">
+              <%= render 'application/time', epoch: event[:sort_time], show_weather: false, in_time_zone: Hindsight::Application.credentials.default_time_zone, show_time_zone: false, index: 0 %>
+              <% alternate_time_zones(@date).each_with_index do |zone, index| %>
+                <%= render 'application/time', epoch: event[:sort_time], show_weather: false, in_time_zone: zone.tz, show_time_zone: false, index: index + 1 %>
+              <% end %>
+              <td>&nbsp;</td>
+              <% 0.upto(@event_groups[event[:type]] - 1).each_with_index do |i| %>
+                <td></td>
+              <% end %>
+              <td class="details" style="<% if colors(event[:type]) %>border-color: <%= colors(event[:type]) %>;<% end %> <% if colors(event[:type]) == 'transparent' %> border-top-color: <%= colors2(@event_groups[event[:type]]) %>;<% end %>" <% if event[:group] %>data-group="<%= event[:group] %>"<% end %> <% if colors(event[:type]) == "transparent" %>data-column="<%= @event_groups[event[:type]] %>"<% end %>>
+                <% if event[:type] == "presto_trip" %>
+                  <div class="card-body">
+                    <%= event[:content][:location] %> - <%= event[:content][:kind] %>
+                  </div>
+                <% elsif event[:type] == "Fitbit" %>
+                  <header class="received" style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <%= event[:content][:source] %>
+                  </header>
+                  <div class="card-body">
+                    <%= ((event[:content][:weight] / 1000.0) * 2.2).round(2) %> lb
+                  </div>
+                <% elsif event[:type] == "github_commit" %>
+                  <div class="card-body">
+                    <a href="<%= event[:content][:html_url] %>">
+                      <i class="fab fa-github"></i>
+                    </a>
+                    <%= event[:content][:commit]["author"]["name"] %> (<%= event[:content][:repo] %>) : <%= event[:content][:commit]["message"] %>
+                  </div>
+                <% elsif event[:type] == "Photo Albums" %>
+                  <div class="card-body">
+                    <%= event[:content][:name] %>
+                  </div>
+                <% elsif event[:type].start_with?("matrix_event") %>
+                  <%= render 'application/matrix_event', post: event, color: colors2(@event_groups[event[:type]]) %>
+                <% elsif event[:type] == "bikeshare_trip" %>
+                  <div class="card-body">
+                    <%= event[:content][:start_station] %> -> <%= event[:content][:end_station] %>
+                  </div>
+                <% elsif event[:type].start_with?("facebook_message") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:sender_name] %></small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                    <p class="<% if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>sent<% else %>received<% end %>">
+                      <%= event[:content][:content] %>
+                    </p>
+                  </div>
+                <% elsif event[:type].start_with?("adium_message") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:real_sender] %></small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <%= event[:content][:message].html_safe %>
+                    </p>
+                  </div>
+                <% elsif event[:type].start_with?("pidgin_message") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:real_sender] || event[:content][:sender] %></small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <%= event[:content][:message].html_safe %>
+                    </p>
+                  </div>
+                <% elsif event[:type].start_with?("mirc_log_") %>
+                  <%= render 'application/irc_log', event: event %>
+                <% elsif event[:type].start_with?("lounge_log_") %>
+                  <%= render 'application/irc_log', event: event %>
+                <% elsif event[:type].start_with?("xchat_log_") %>
+                  <%= render 'application/irc_log', event: event %>
+                <% elsif event[:type].start_with?("email_message") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:account] == event[:content][:from] %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:from] %></small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                    <p class="<% if event[:content][:account] == event[:content][:from] %>sent<% else %>received<% end %>">
+                      <%= event[:content][:subject] %>
+                    </p>
+                  </div>
+                <% elsif event[:type].start_with?("windows_phone_sms_") %>
+                  <div class="card-body">
+                    <p class="<% if event[:content]['is_sent'] %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:real_name] %> (<%= event[:content][:phone_number] %>):</small>
+                      <br />
+                      <%= event[:content]["body"] %>
+                    </p>
+                  </div>
+                <% elsif event[:type] == "android_call" %>
+                  <div class="card-body">
+                    <%= event[:content][:contact_name] %> (<%= event[:content][:number] %>)
+                  </div>
+                <% elsif event[:type].start_with?("android_sms_") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:sms_type] == "2" %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:contact_name] %> (<%= event[:content][:address] %>):</small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                      <%= event[:content][:body] %>
+                    </p>
+                  </div>
+                <% elsif event[:type].start_with?("calendar_event") %>
+                  <div class="card-body">
+                    <%= event[:content][:summary] %>
+                  </div>
+                <% elsif event[:type].start_with?("hangouts_event_") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:real_name] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:real_name] %>:</small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                    <p class="<% if event[:content][:real_name] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <% event[:content][:chat_message]["message_content"]["segment"].each do |segment| %>
+                        <%= segment["text"] %>
+                      <% end %>
+                    </p>
+                  </div>
+                <% elsif event[:type] == 'Photos' %>
+                  <div class="card-body">
+                    <p class="neutral">
+                      <a data-fancybox href="/photos/<%= event[:content][:id] %>/preview"><img src="/photos/<%= event[:content][:id] %>/thumbnail" /></a>
+                      <%= event[:caption].html_safe %>
+                    </p>
+                  </div>
+                <% else %>
+                  <%= event[:type] %>
+                <% end %>
+              </td>
+              <% (@event_groups[event[:type]] + 1).upto(@event_groups.length).each_with_index do |i| %>
+                <td></td>
+              <% end %>
+            </tr>
+          <% end %>
+    <% end %>
+    </table>
+  </section>
+  <div class="tomorrow">
+    <a href="/date/<%= @date.tomorrow %>"><i class="fas fa-angle-down"></i></a>
+  </div>
+</article>
+<script>
+  function redraw() {
+    details = document.querySelectorAll('.details');
+    for (var i = 0; i < details.length; i++) {
+      if (typeof details[i].dataset.group !== 'undefined') {
+        selector = document.querySelectorAll('[data-group=' + details[i].dataset.group + ']');
+        if (typeof selector[1] !== 'undefined') {
+          start_event = selector[0];
+          end_event = selector[1];
+          selector[0].style.height = (end_event.getBoundingClientRect().top - start_event.getBoundingClientRect().top + 20) + 'px';
+          //start_event.style.left = start_event.getBoundingClientRect().left + 'px';
+          //start_event.style.width = (start_event.getBoundingClientRect().right - start_event.getBoundingClientRect().left) + 'px';
+          start_event.children[0].style.height = 'calc(100% + 30px)';
+          start_event.style.position = 'absolute';
+          start_event.style.zIndex = 1;
+          end_event.children[0].style.color = '#FFFFFF';
+          end_event.children[0].style.position = 'relative';
+          end_event.children[0].style.top = '-10px';
+
+        }
+      }
+    }
+  }
+  window.addEventListener("load", redraw);
+  window.onresize = redraw;
+</script>

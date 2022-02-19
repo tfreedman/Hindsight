@@ -1,13 +1,25 @@
+# This file contains specific overrides for specific types of events. 
+# Personal data might go here, which is why user_filters.rb is in the .gitignore.
+
 module UserFilters
-  # This is a blank file showing how to filter specific events from Hindsight. For example,
+  # This is a method showing how to filter specific events from Hindsight. For example,
   # we might not be interested in all of the Nickserv messages we've ever sent/received, as
-  # they're mostly noise. To filter them out, we move this file to user_filters.rb, and 
-  # return nil if it matches. Invoke this in ApplicationController.
+  # they're mostly noise. 
 
   def filter_events(event, type, options = {})
     # if type == "nickserv"
       # return nil
     # end
     return event
+  end
+
+  # This method allows us to override the color used to highlight specific event types.
+  # You can use this to have your yellow calendar events be drawn in yellow, etc.
+
+  def override_colors(type)
+    # if type == "calendar_event_SOMETHING"
+    #  return '#FF0000'
+    # end
+    return nil
   end
 end

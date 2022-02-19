@@ -1,24 +1,7 @@
-# README
+# Hindsight
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Hindsight is a program designed to show you what happened on a given day in your past. By combining old private logs that you input with public datasets, it can construct a 2D timeline of everything that happened on a given date.
 
-Things you may want to cover:
+You can think of it as a diary that writes itself.
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+More information, including screenshots, is available [here](https://tylerfreedman.com/hindsight).

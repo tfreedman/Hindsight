@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module Hindsight
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    config.load_defaults 7.0
 
     config.time_zone = File.read("/etc/timezone").chomp
     config.active_record.default_timezone = :local

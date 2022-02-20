@@ -39,6 +39,10 @@
             <th>GitHub Commits</th>
           <% elsif key.include?('android_call') %>
             <th>Call Log</th>
+          <% elsif key.include?('youtube_video') %>
+            <th>YouTube</th>
+          <% elsif key.include?('deviantart_post') %>
+            <th>DeviantArt</th>
           <% else %>
             <th><%= key.gsub('matrix_event_', '') %></th>
           <% end %>
@@ -135,6 +139,10 @@
                   <%= render 'application/irc_log', event: event %>
                 <% elsif event[:type].start_with?("xchat_log_") %>
                   <%= render 'application/irc_log', event: event %>
+                <% elsif event[:type].start_with?("youtube_video") %>
+                  <%= render 'application/youtube_video', event: event %>
+                <% elsif event[:type].start_with?("deviantart_post") %>
+                  <%= render 'application/deviantart_post', event: event %>
                 <% elsif event[:type].start_with?("email_message") %>
                   <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
                     <p class="<% if event[:content][:account] == event[:content][:from] %>sent<% else %>received<% end %>">

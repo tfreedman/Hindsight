@@ -1,8 +1,17 @@
 class ApplicationController < ActionController::Base
   before_action :generate_name_lookup_table
-  before_action :check_session_keys
+  before_action :check_session_keys, except: [:auth]
+
   include UserFilters
 
+  def auth
+    if params[:key] == Hindsight::Application.credentials.auth_token
+      #session[:key] = "hello!"
+      render plain: ":)"
+    end
+    render plain: ":(" and return
+  end
+  
   def check_session_keys
     if !session[:key] || (session[:key] && session[:key] != "hello!")
       render :json => {:status=>false}, :status => 401 and return
@@ -232,6 +241,18 @@ class ApplicationController < ActionController::Base
     github_commits = GitHubCommit.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     github_commits.each do |g|
       @events << {sort_time: g.timestamp, type: 'github_commit', content: g}
+    end
+
+    if Hindsight::Application.credentials.sociallink_integration
+      youtube_videos = YoutubeVideo.where(published_at: @date.beginning_of_day..@date.end_of_day).all
+      youtube_videos.each do |y|
+        @events << {sort_time: y.published_at.to_i, type: 'youtube_video', content: y}
+      end
+
+      deviantart_posts = DeviantartPost.where(pubdate: @date.beginning_of_day..@date.end_of_day).all
+      deviantart_posts.each do |d|
+        @events << {sort_time: d.pubdate.to_i, type: 'deviantart_post', content: d}
+      end
     end
 
     @on_this_day = {}

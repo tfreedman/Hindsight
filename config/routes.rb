@@ -6,5 +6,7 @@ Rails.application.routes.draw do
   get '/date/:yyyy-:mm-:dd', to: 'application#date'
   get '/photos/:id/:format', to: 'application#photos'
 
+  get '/auth/:key' => 'application#auth'
+
  root 'application#overview'
 end

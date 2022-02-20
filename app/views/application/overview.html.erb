@@ -95,59 +95,63 @@
 
         </ul>
       </li>
-    </ul>
 
     <% if (@totals['BikeshareTrip'] + @totals['PrestoTrip']) > 0 %>
-      <strong>Transportation:</strong>
-      <ul>
-        <% if @totals['BikeshareTrip'] > 0 %>
-          <li data-service="BikeshareTrip">
-            <input autocomplete="off" type="checkbox" checked="true" id="BikeshareTrip" /> <label for="BikeshareTrip">Bikeshare Trips (<%= @totals['BikeshareTrip'] || 0 %>)</label>
-          </li>
-        <% end %>
-              
-        <% if @totals['PrestoTrip'] > 0 %>
-          <li data-service="PrestoTrip">
-            <input autocomplete="off" type="checkbox" checked="true" id="PrestoTrip" /> <label for="PrestoTrip">Presto Trips (<%= @totals['PrestoTrip'] || 0 %>)</label>
-          </li>
-        <% end %>
-      </ul>
+      <li>
+        <strong>Transportation:</strong>
+        <ul>
+          <% if @totals['BikeshareTrip'] > 0 %>
+            <li data-service="BikeshareTrip">
+              <input autocomplete="off" type="checkbox" checked="true" id="BikeshareTrip" /> <label for="BikeshareTrip">Bikeshare Trips (<%= @totals['BikeshareTrip'] || 0 %>)</label>
+            </li>
+          <% end %>
+                
+          <% if @totals['PrestoTrip'] > 0 %>
+            <li data-service="PrestoTrip">
+              <input autocomplete="off" type="checkbox" checked="true" id="PrestoTrip" /> <label for="PrestoTrip">Presto Trips (<%= @totals['PrestoTrip'] || 0 %>)</label>
+            </li>
+          <% end %>
+        </ul>
+      </li>
     <% end %>
 
     <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent']) > 0 %>
-      <strong>Other:</strong>
-      <ul>
-        <% if @totals['CalendarEvent'] > 0 %>
-          <li data-service="CalendarEvent">
-            <input autocomplete="off" type="checkbox" checked="true" id="CalendarEvent" /> <label for="CalendarEvent">Calendar Events (<%= @totals['CalendarEvent'] || 0 %>)</label>
-          </li>
-        <% end %>
+      <li>
+        <strong>Other:</strong>
+        <ul>
+          <% if @totals['CalendarEvent'] > 0 %>
+            <li data-service="CalendarEvent">
+              <input autocomplete="off" type="checkbox" checked="true" id="CalendarEvent" /> <label for="CalendarEvent">Calendar Events (<%= @totals['CalendarEvent'] || 0 %>)</label>
+            </li>
+          <% end %>
 
-        <% if @totals['FinancialTransaction'] > 0 %>
-          <li data-service="FinancialTransaction">
-            <input autocomplete="off" type="checkbox" checked="true" id="FinancialTransaction" /> <label for="FinancialTransaction">Financial Transactions (<%= @totals['FinancialTransaction'] || 0 %>)</label>
-          </li>
-        <% end %>
+          <% if @totals['FinancialTransaction'] > 0 %>
+            <li data-service="FinancialTransaction">
+              <input autocomplete="off" type="checkbox" checked="true" id="FinancialTransaction" /> <label for="FinancialTransaction">Financial Transactions (<%= @totals['FinancialTransaction'] || 0 %>)</label>
+            </li>
+          <% end %>
 
-        <% if @totals['FitbitMeasurement'] > 0 %>
-          <li data-service="FitbitMeasurement">
-            <input autocomplete="off" type="checkbox" checked="true" id="FitbitMeasurement" /> <label for="FitbitMeasurement">Fitbit Measurements (<%= @totals['FitbitMeasurement'] || 0 %>)</label>
-          </li>
-        <% end %>
+          <% if @totals['FitbitMeasurement'] > 0 %>
+            <li data-service="FitbitMeasurement">
+              <input autocomplete="off" type="checkbox" checked="true" id="FitbitMeasurement" /> <label for="FitbitMeasurement">Fitbit Measurements (<%= @totals['FitbitMeasurement'] || 0 %>)</label>
+            </li>
+          <% end %>
 
-        <% if @totals['GitHubCommit'] > 0 %>
-          <li data-service="GitHubCommit">
-            <input autocomplete="off" type="checkbox" checked="true" id="GitHubCommit" /> <label for="GitHubCommit">GitHub Commits (<%= @totals['GitHubCommit'] || 0 %>)</label>
-          </li>
-        <% end %>
-
-        <% if @totals['Photo'] > 0 %>
-          <li data-service="Photo">
-            <input autocomplete="off" type="checkbox" checked="true" id="Photo" /> <label for="Photo">Photos (<%= @totals['Photo'] || 0 %>)</label>
-          </li>
-        <% end %>
-      </ul>
+          <% if @totals['GitHubCommit'] > 0 %>
+            <li data-service="GitHubCommit">
+              <input autocomplete="off" type="checkbox" checked="true" id="GitHubCommit" /> <label for="GitHubCommit">GitHub Commits (<%= @totals['GitHubCommit'] || 0 %>)</label>
+            </li>
+          <% end %>
+  
+          <% if @totals['Photo'] > 0 %>
+            <li data-service="Photo">
+              <input autocomplete="off" type="checkbox" checked="true" id="Photo" /> <label for="Photo">Photos (<%= @totals['Photo'] || 0 %>)</label>
+            </li>
+          <% end %>
+        </ul>
+      </li>
     <% end %>
+  </ul>
 
     <div class="tomorrow">
       <a href="/overview/<%= (@date + 1.year).year %>"><i class="fas fa-angle-down"></i></a>
@@ -160,19 +164,56 @@
       <% params[:start_date] = @date %>
       <div class="month">
         <%= month_calendar do |date| %>
-          <a 
-            <% if @events[date]
-              classes = ''
-              @events[date].each do |key, value|
-                classes += "#{key} "
-              end
-              classes += "selected-date"
-            end %>
-            class="<%= classes %>" href="/date/<%= date %>?start_date=<%= date %>"><%= date.day %>
-          </a>
+          <a data-date="<%= date %>" href="/date/<%= date %>?start_date=<%= date %>"><%= date.day %></a>
         <% end %>
       </div>
       <% @date = @date + 1.month %>
     <% end %>
   </section>
+
+  <script>
+    var events = <%= raw(@events.to_json) %>;
+    var dates = {};
+
+    function selectFilters() {
+      var filters = [];
+      document.querySelectorAll('.services input').forEach(input => {
+        if (input.checked === true) {
+          filters.push(input.id);
+        }
+      });
+      return filters;
+    }
+
+    function generateDates(filters) {
+      for (const [date, kind] of Object.entries(events)) {
+        dates[date] = 0;
+        for (const filter of filters) {
+          if (events[date][filter]) {
+            dates[date] += events[date][filter];
+          }
+        }
+      }
+      document.querySelectorAll('.day a').forEach(link => {
+        if (dates[link.dataset.date] > 0 && !link.classList.contains('selected-data')) {
+          link.classList.add('selected-date');
+        } else {
+          link.classList.remove('selected-date');
+        }
+      });
+    }
+
+    filters = selectFilters();
+    generateDates(filters);
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+      document.querySelectorAll('.services input').forEach(link => {
+        link.addEventListener("click", (e) => {
+          var filters = selectFilters();
+          var g = generateDates(filters);
+          return false;
+        });
+      });
+    });
+  </script>
 </article>

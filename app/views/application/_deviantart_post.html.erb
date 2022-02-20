@@ -1,0 +1,11 @@
+<% json = JSON.parse(event[:content][:json_dump]) %>
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p>
+    <small><%= json["title"] %> - <%= event[:content][:username] %></small>
+  </p>
+</header>
+<div class="card-body">
+  <p>
+    <a href="https://www.deviantart.com/<%= event[:content][:username] %>/art/<%= event[:content][:post_id] %>"><%= json["title"] %></a>
+  </p>
+</div>

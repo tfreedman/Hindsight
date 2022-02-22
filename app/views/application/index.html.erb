@@ -1,9 +1,0 @@
-<% @events = CalendarEvent.where('start_time > 0 AND end_time > 0').all %>
-<%= month_calendar(events: @events, attribute: :start_date, end_attribute: :end_date) do |date, events| %>
-  <a href="/date/<%= date %>?start_date=<%= date %>"><%= date.day %></a>
-  <% events.each do |event| %>
-    <div style="background: <%= colors('calendar_event_' + event.calendar) %>">
-      <%= event.summary %>
-    </div>
-  <% end %>
-<% end %>

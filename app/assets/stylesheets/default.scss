@@ -122,59 +122,6 @@ body#overview {
   }
 }
 
-body#index {
-  background: #45ACE7;
-
-  .simple-calendar {
-    .calendar-heading {
-      .calendar-title {
-        font-family: 'Quicksand';
-        font-weight: bold;
-        font-size: 30px;
-      }
-
-      text-align: center;
-      a {margin: 0 50px}
-      padding: 0 20px;
-      background: #45ACE7;
-      color: #FFF;
-      height: 50px;
-
-      a {
-        color: #FFF;
-        text-decoration: none;
-      }
-    }
-
-    .day {
-      height: calc(100vh / 6);
-      background: #FFF;
-      text-align: right;
-
-      & > a {
-        color: #000;
-        text-decoration: none;
-      }
-
-      &.has-events div {
-        text-align: left;
-        font-size: 13px;
-        padding: 4px;
-        margin: 2px;
-        border-radius: 5px;
-      }
-    }
-
-    th {
-      background: #FFF;
-    }
-
-    .next-month {
-      background: #DDD;
-    }
-  }
-}
-
 body#date {
   background: linear-gradient(to right, #383353 0vw, #383353 320px, #F6F6F6 320px, #F6F6F6 100vw) repeat-y scroll 0 0 rgba(0, 0, 0, 0);
 

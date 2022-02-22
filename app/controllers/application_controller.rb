@@ -62,10 +62,6 @@ class ApplicationController < ActionController::Base
     return nil
   end
 
-  def index
-    @pagename = 'index'
-  end
-
   def date
     @date = Date.parse("#{params[:yyyy]}-#{params[:mm]}-#{params[:dd]}")
     if params[:start_date].nil?

@@ -264,7 +264,7 @@ class ApplicationController < ActionController::Base
       Dir.foreach(Hindsight::Application.credentials.magazines_path + magazine) do |issue|
         next if issue == '.' or issue == '..'
         if issue.start_with? @date.strftime("%Y-%m")
-          magazines << {name: issue.split(@date.strftime("%Y-%m "))[1].split('.')[0], url: "https://<%= Hindsight::Application.credentials.development_hosts[0] %>/magazines/#{magazine}/#{issue}"}
+          magazines << {name: issue.split(@date.strftime("%Y-%m "))[1].split('.')[0], url: "https://#{Hindsight::Application.credentials.development_hosts[0]}/magazines/#{magazine}/#{issue}"}
         end
       end
     end

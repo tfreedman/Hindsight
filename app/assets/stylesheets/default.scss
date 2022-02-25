@@ -28,14 +28,14 @@ body {
 * {box-sizing: border-box}
 
 body#overview {
-  background: linear-gradient(to right, #383353 0vw, #383353 320px, #F6F6F6 320px, #F6F6F6 100vw) repeat-y scroll 0 0 rgba(0, 0, 0, 0);
+  background: linear-gradient(to right, #383353 0vw, #383353 300px, #F6F6F6 300px, #F6F6F6 100vw) repeat-y scroll 0 0 rgba(0, 0, 0, 0);
 
   article {
     aside {
       .tomorrow, .yesterday {
         text-align: center;
         font-size: 50px;
-        width: 320px;
+        width: 300px;
         z-index: 4;
         a {color: #FFF}
       }
@@ -59,7 +59,7 @@ body#overview {
     }
 
     section {
-      width: calc(100% - 320px);
+      width: calc(100% - 300px);
       .month {
         width: 500px;
         height: 450px;
@@ -123,7 +123,7 @@ body#overview {
 }
 
 body#date {
-  background: linear-gradient(to right, #383353 0vw, #383353 320px, #F6F6F6 320px, #F6F6F6 100vw) repeat-y scroll 0 0 rgba(0, 0, 0, 0);
+  background: linear-gradient(to right, #383353 0vw, #383353 300px, #F6F6F6 300px, #F6F6F6 100vw) repeat-y scroll 0 0 rgba(0, 0, 0, 0);
 
   & > header {
     background: #45ACE7;
@@ -182,7 +182,7 @@ body#date {
     .tomorrow, .yesterday {
       text-align: center;
       font-size: 50px;
-      width: 320px;
+      width: 300px;
       z-index: 4;
       a {color: #FFF}
     }
@@ -194,8 +194,10 @@ body#date {
 
     section.items {
       word-wrap: break-word;
-      width: calc(100% - 320px);
+      width: calc(100% - 300px);
       img {width: 100%}
+      position: relative;
+      z-index: 1;
 
       table {
         background: #F6F6F6;
@@ -206,6 +208,8 @@ body#date {
         table td:last-child, th:last-child {
           width: 100%;
         }
+
+        .hidden {display: none !important}
 
         th {
           position: sticky;
@@ -283,6 +287,14 @@ body#date {
     }
 
     aside {
+      scrollbar-color: transparent transparent;
+      scrollbar-width: thin;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      transition: scrollbar-color 0.5s;
+  
+      &:hover {scrollbar-color: #ddd transparent}
+
       h1 {font-size: 30px}
       a {color: #FFF}
 
@@ -291,9 +303,9 @@ body#date {
       padding-right: 20px;
       padding-left: 20px;
       background: #383353;
-      position: sticky;
-      top: 0;
+      position: fixed;
       color: #FFF;
+      z-index: 0;
 
       footer {
         text-align: center;

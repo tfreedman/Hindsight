@@ -91,6 +91,13 @@
     <% end %>
   <% end %>
 
+  <h2>Columns:</h2>
+  <ul class="services">
+    <% @event_groups.each_with_index do |(key, value), index| %>
+      <li><input autocomplete="off" type="checkbox" checked="true" data-position="<%= alternate_time_zones(@date).count + index + 3 %>" /> <%= friendly_groups(key) %></li>
+    <% end %>
+  </ul>
+
   <footer>
     <% if @date.beginning_of_day >= Date.parse("2005-06-23").beginning_of_day %>
       <a href="https://reddit.tylerfreedman.com/<%= @date %>/"><i class="fab fa-reddit"></i></a>

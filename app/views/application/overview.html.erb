@@ -11,9 +11,11 @@
 
     <h3>Filter By:</h3>
 
-    <strong>Instant Messaging:</strong>
     <ul class="services">
+      <% if (@totals['AdiumMessage'] + @totals['ColloquyMessage'] + @totals['FacebookMessage'] + @totals['EmailMessage'] + @totals['HangoutsEvent'] + @totals['LoungeLog'] + @totals['MircLog'] + @totals['MatrixEvent'] + 
+          @totals['PidginMessage'] + @totals['AndroidSms'] + @totals['WindowsPhoneSms'] + @totals['XchatLog']) > 0 %>
       <li>
+        <strong>Instant Messaging:</strong>
         <ul>
           <% if @totals['AdiumMessage'] > 0 %>
             <li data-service="AdiumMessage">
@@ -92,9 +94,9 @@
               <input autocomplete="off" type="checkbox" checked="true" id="XchatLog" /> <label for="XchatLog">X-Chat (<%= @totals['XchatLog'] || 0 %>)</label>
             </li>
           <% end %>
-
         </ul>
       </li>
+    <% end %>
 
     <% if (@totals['BikeshareTrip'] + @totals['PrestoTrip']) > 0 %>
       <li>

@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
       @date = Date.new(Time.now.year, 01, 01)
     end
     @types = DateSummary.pluck(:event_type).uniq.sort
-    summaries = DateSummary.where(:date => @date..(@date + 1.year)).where.not(event_type: 'CalendarEvent').all
+    summaries = DateSummary.where(:date => @date..(@date + 1.year)).all
 
     @totals = Hash.new { |hash, key| hash[key] = 0 }
     @events = Hash.new

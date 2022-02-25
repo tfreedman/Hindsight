@@ -10,6 +10,7 @@
       'AndroidSms',
       'BikeshareTrip',
       'CalendarEvent',
+      'CalendarHoliday',
       'ColloquyMessage',
       'EmailMessage',
       'FacebookMessage',
@@ -55,7 +56,16 @@
           dates[event_date] += 1
         end
       elsif event_type == 'CalendarEvent'
-        CalendarEvent.find_each do |e|
+        CalendarEvent.where.not('calendar ILIKE ?', "%holiday%").where.not('calendar ILIKE ?', "ALBUM:%").find_each do |e|
+          time = Time.at(e.start_time).end_of_day
+          while time <= Time.at(e.end_time).end_of_day
+            event_date = time.to_date.to_s
+            dates[event_date] += 1
+            time += 1.day
+          end
+        end
+      elsif event_type == 'CalendarHoliday'
+        CalendarEvent.where('calendar ILIKE ?', "%holiday%").find_each do |e|
           time = Time.at(e.start_time).end_of_day
           while time <= Time.at(e.end_time).end_of_day
             event_date = time.to_date.to_s

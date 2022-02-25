@@ -117,13 +117,19 @@
       </li>
     <% end %>
 
-    <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent'] + @totals['PhotoAlbum']) > 0 %>
+    <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent'] + @totals['CalendarHoliday'] + @totals['PhotoAlbum']) > 0 %>
       <li>
         <strong>Other:</strong>
         <ul>
           <% if @totals['CalendarEvent'] > 0 %>
             <li data-service="CalendarEvent">
               <input autocomplete="off" type="checkbox" checked="true" id="CalendarEvent" /> <label for="CalendarEvent">Calendar Events (<%= @totals['CalendarEvent'] || 0 %>)</label>
+            </li>
+          <% end %>
+
+          <% if @totals['CalendarHoliday'] > 0 %>
+            <li data-service="CalendarHoliday">
+              <input autocomplete="off" type="checkbox" checked="true" id="CalendarHoliday" /> <label for="CalendarHoliday">Holidays (<%= @totals['CalendarHoliday'] || 0 %>)</label>
             </li>
           <% end %>
 

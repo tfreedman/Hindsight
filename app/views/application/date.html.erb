@@ -9,43 +9,7 @@
         <% end %>
         <th><div style="width: 20px"></div></th>
         <% @event_groups.each do |key, value| %>
-          <% if key.include?('matrix_event_') %>
-            <% room_title = MatrixRoom.where(room_id: key.gsub('matrix_event_', '')).first.name %>
-            <% if room_title == '' || room_title.nil? %>
-              <% room_title = (MatrixRoom.where(room_id: key.gsub('matrix_event_', '')).first.participants - [Hindsight::Application.credentials.mxid]).to_sentence.truncate(40) %>
-            <% end %>
-            <th><%= room_title %></th>
-          <% elsif key.start_with?('email_message') %>
-            <th><%= key.split('email_message_')[1] + ' (email)' %></th>
-          <% elsif key.include?('facebook_message_') %>
-            <th><%= key.gsub('facebook_message_', '') %></th>
-          <% elsif key.include?('pidgin_message_') %>
-            <th><%= key.gsub('pidgin_message_', '') %></th>
-          <% elsif key.include?('calendar_event_') %>
-            <th><%= key.gsub('calendar_event_', '').downcase.capitalize + ' (Calendar)' %></th>
-          <% elsif key.include?('adium_message_') %>
-            <th><%= key.gsub('adium_message_', '') %></th>
-          <% elsif key.include?('mirc_log_') %>
-            <th><%= key.gsub('mirc_log_', '') %></th>
-          <% elsif key.include?('hangouts_event_') %>
-            <th><%= (HangoutsConversation.where(conversation_id: key.gsub('hangouts_event_', '')).first.participant_data.pluck('fallback_name') - [Hindsight::Application.credentials.real_name]).to_sentence %></th>
-          <% elsif key.include?('android_sms_') %>
-            <th><%= key.gsub('android_sms_', '') + ' (SMS)' %></th>
-          <% elsif key.include?('windows_phone_sms_') %>
-            <th><%= key.gsub('windows_phone_sms_', '') + ' (SMS)' %></th>
-          <% elsif key.include?('xchat_log_') %>
-            <th><%= key.gsub('xchat_log_', '') %> (X-Chat)</th>
-          <% elsif key.include?('github_commit') %>
-            <th>GitHub Commits</th>
-          <% elsif key.include?('android_call') %>
-            <th>Call Log</th>
-          <% elsif key.include?('youtube_video') %>
-            <th>YouTube</th>
-          <% elsif key.include?('deviantart_post') %>
-            <th>DeviantArt</th>
-          <% else %>
-            <th><%= key.gsub('matrix_event_', '') %></th>
-          <% end %>
+          <th><%= friendly_groups(key) %></th>
         <% end %>
         <th>&nbsp;</th>
       </tr>
@@ -241,4 +205,20 @@
   }
   window.addEventListener("load", redraw);
   window.onresize = redraw;
+
+
+  function toggleColumn(column) {
+    document.querySelectorAll(`section table td:nth-child(${column}), section table th:nth-child(${column})`).forEach(td => {
+      td.classList.toggle('hidden');
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(event) {
+    document.querySelectorAll('.services input').forEach(link => {
+      link.addEventListener("click", (e) => {
+        toggleColumn(link.dataset.position);
+        return false;
+      });
+    });
+  });
 </script>

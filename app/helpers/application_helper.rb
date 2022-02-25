@@ -1,6 +1,47 @@
 module ApplicationHelper
   include UserFilters
 
+  def friendly_groups(k)
+    if k.include?('matrix_event_')
+      room_title = MatrixRoom.where(room_id: k.gsub('matrix_event_', '')).first.name
+      if room_title == '' || room_title.nil?
+        (MatrixRoom.where(room_id: k.gsub('matrix_event_', '')).first.participants - [Hindsight::Application.credentials.mxid]).to_sentence.truncate(25)
+      else
+        room_title
+      end
+    elsif k.start_with?('email_message')
+      k.split('email_message_')[1] + ' (email)'
+    elsif k.include?('facebook_message_')
+      k.gsub('facebook_message_', '')
+    elsif k.include?('pidgin_message_')
+      k.gsub('pidgin_message_', '')
+    elsif k.include?('calendar_event_')
+      k.gsub('calendar_event_', '').downcase.capitalize + ' (Calendar)'
+    elsif k.include?('adium_message_')
+      k.gsub('adium_message_', '')
+    elsif k.include?('mirc_log_')
+      k.gsub('mirc_log_', '')
+    elsif k.include?('hangouts_event_')
+      (HangoutsConversation.where(conversation_id: k.gsub('hangouts_event_', '')).first.participant_data.pluck('fallback_name') - [Hindsight::Application.credentials.real_name]).to_sentence
+    elsif k.include?('android_sms_')
+      k.gsub('android_sms_', '') + ' (SMS)'
+    elsif k.include?('windows_phone_sms_')
+      k.gsub('windows_phone_sms_', '') + ' (SMS)'
+    elsif k.include?('xchat_log_')
+      k.gsub('xchat_log_', '') + " (X-Chat)"
+    elsif k.include?('github_commit')
+      "GitHub Commits"
+    elsif k.include?('android_call')
+      "Call Log"
+    elsif k.include?('youtube_video')
+      "YouTube"
+    elsif k.include?('deviantart_post')
+      "DeviantArt"
+    else
+      k
+    end
+  end
+
   def alternate_time_zones(date)
     return Location.where(date: date).where.not(name: Hindsight::Application.credentials.default_location.split(',')[0]).all
   end

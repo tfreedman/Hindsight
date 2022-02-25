@@ -35,7 +35,6 @@ body#overview {
       .tomorrow, .yesterday {
         text-align: center;
         font-size: 50px;
-        width: 300px;
         z-index: 4;
         a {color: #FFF}
       }
@@ -179,19 +178,6 @@ body#date {
     height: 100%;
     position: relative;
 
-    .tomorrow, .yesterday {
-      text-align: center;
-      font-size: 50px;
-      width: 300px;
-      z-index: 4;
-      a {color: #FFF}
-    }
-
-    .tomorrow {
-      position: absolute;
-      bottom: 0;
-    }
-
     section.items {
       word-wrap: break-word;
       width: calc(100% - 300px);
@@ -306,6 +292,13 @@ body#date {
       position: fixed;
       color: #FFF;
       z-index: 0;
+
+      .tomorrow, .yesterday {
+        text-align: center;
+        font-size: 50px;
+        z-index: 4;
+        a {color: #FFF}
+      }
 
       footer {
         text-align: center;

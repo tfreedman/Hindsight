@@ -115,7 +115,7 @@
       </li>
     <% end %>
 
-    <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent']) > 0 %>
+    <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent'] + @totals['PhotoAlbum']) > 0 %>
       <li>
         <strong>Other:</strong>
         <ul>
@@ -146,6 +146,12 @@
           <% if @totals['Photo'] > 0 %>
             <li data-service="Photo">
               <input autocomplete="off" type="checkbox" checked="true" id="Photo" /> <label for="Photo">Photos (<%= @totals['Photo'] || 0 %>)</label>
+            </li>
+          <% end %>
+
+          <% if @totals['PhotoAlbum'] > 0 %>
+            <li data-service="PhotoAlbum">
+              <input autocomplete="off" type="checkbox" checked="true" id="PhotoAlbum" /> <label for="PhotoAlbum">Photo Album Dates (<%= @totals['PhotoAlbum'] || 0 %>)</label>
             </li>
           <% end %>
         </ul>

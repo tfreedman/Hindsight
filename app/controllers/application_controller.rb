@@ -116,6 +116,7 @@ class ApplicationController < ActionController::Base
 
     photos = Photo.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     photos.each do |photo|
+      logger.info photo.id
       next if photo.is_sidecar?
       next if photo.lightroom_rating == 1.0
 

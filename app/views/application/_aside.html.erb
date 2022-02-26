@@ -99,10 +99,10 @@
   </ul>
 
   <footer>
-    <% if @date.beginning_of_day >= Date.parse("2005-06-23").beginning_of_day %>
+    <% if @date.beginning_of_day >= Date.parse("2005-06-23").beginning_of_day && @date.beginning_of_day <= Time.now %>
       <a href="https://reddit.tylerfreedman.com/<%= @date %>/"><i class="fab fa-reddit"></i></a>
       &nbsp;
-      <% if @date.beginning_of_day >= Date.parse("2007-02-19").beginning_of_day %>
+      <% if @date.beginning_of_day >= Date.parse("2007-02-19").beginning_of_day && @date.beginning_of_day <= Time.now %>
         <a href="https://news.ycombinator.com/front?day=<%= @date %>"><i class="fab fa-hacker-news-square"></i></a>
       <% end %>
     <% end %>

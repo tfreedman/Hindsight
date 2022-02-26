@@ -11,6 +11,7 @@
       'BikeshareTrip',
       'CalendarEvent',
       'CalendarHoliday',
+      'CalendarOngoing',
       'ColloquyMessage',
       'EmailMessage',
       'FacebookMessage',
@@ -55,8 +56,8 @@
           event_date = Time.at(e.end_time).to_date.to_s
           dates[event_date] += 1
         end
-      elsif event_type == 'CalendarEvent'
-        CalendarEvent.where.not('calendar ILIKE ?', "%holiday%").where.not('calendar ILIKE ?', "ALBUM:%").find_each do |e|
+      elsif event_type == 'CalendarEvent' # Normal calendar events
+        CalendarEvent.where.not('calendar ILIKE ?', "%holiday%").where.not('calendar ILIKE ?', "ALBUM:%").where.not('calendar ILIKE ?', "%Ongoing%").find_each do |e|
           time = Time.at(e.start_time).end_of_day
           while time <= Time.at(e.end_time).end_of_day
             event_date = time.to_date.to_s
@@ -64,7 +65,16 @@
             time += 1.day
           end
         end
-      elsif event_type == 'CalendarHoliday'
+      elsif event_type == 'CalendarOngoing' # Long-term things to treat separately
+        CalendarEvent.where('calendar ILIKE ?', "%Ongoing%").find_each do |e|
+          time = Time.at(e.start_time).end_of_day
+          while time <= Time.at(e.end_time).end_of_day
+            event_date = time.to_date.to_s
+            dates[event_date] += 1
+            time += 1.day
+          end
+        end
+      elsif event_type == 'CalendarHoliday' # Typical holidays
         CalendarEvent.where('calendar ILIKE ?', "%holiday%").find_each do |e|
           time = Time.at(e.start_time).end_of_day
           while time <= Time.at(e.end_time).end_of_day

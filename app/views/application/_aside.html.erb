@@ -91,12 +91,14 @@
     <% end %>
   <% end %>
 
-  <h2>Columns:</h2>
-  <ul class="services">
-    <% @event_groups.each_with_index do |(key, value), index| %>
-      <li><input autocomplete="off" type="checkbox" checked="true" data-position="<%= alternate_time_zones(@date).count + index + 3 %>" /> <%= friendly_groups(key) %></li>
-    <% end %>
-  </ul>
+  <% if @event_groups.count > 0 %>
+    <h2>Columns:</h2>
+    <ul class="services">
+      <% @event_groups.each_with_index do |(key, value), index| %>
+        <li><input autocomplete="off" type="checkbox" checked="true" data-position="<%= alternate_time_zones(@date).count + index + 3 %>" /> <%= friendly_groups(key) %></li>
+      <% end %>
+    </ul>
+  <% end %>
 
   <footer>
     <% if @date.beginning_of_day >= Date.parse("2005-06-23").beginning_of_day && @date.beginning_of_day <= Time.now %>

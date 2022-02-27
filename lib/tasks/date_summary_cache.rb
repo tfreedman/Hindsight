@@ -57,7 +57,7 @@
           dates[event_date] += 1
         end
       elsif event_type == 'CalendarEvent' # Normal calendar events
-        CalendarEvent.where.not('calendar ILIKE ?', "%holiday%").where.not('calendar ILIKE ?', "ALBUM:%").where.not('calendar ILIKE ?', "%Ongoing%").find_each do |e|
+        CalendarEvent.where.not('calendar ILIKE ?', "%holiday%").where.not('calendar ILIKE ?', "%ALBUMS%").where.not('calendar ILIKE ?', "%Ongoing%").find_each do |e|
           time = Time.at(e.start_time).end_of_day
           while time <= Time.at(e.end_time).end_of_day
             event_date = time.to_date.to_s

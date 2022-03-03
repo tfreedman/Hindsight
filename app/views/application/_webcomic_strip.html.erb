@@ -1,0 +1,13 @@
+<% snpc = ServiceNamePathCache.where(service: 'Webcomic', username: event[:content][:comic]).first %>
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p class="">
+    <small><%= snpc.name %></small>
+  </p>
+</header>
+<div class="card-body">
+  <p>
+    <a data-fancybox="webcomic_<%= event[:content][:strip] %>" href='<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{event[:content][:filename]}" %>'>
+      <img src='<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{event[:content][:filename]}" %>'/>
+    </a>
+  </p>
+</div>

@@ -1,0 +1,53 @@
+<% ta = TwitterAccount.where(user_id: event[:content][:user_id]).first %>
+<% snpc = ServiceNamePathCache.where(service: 'Twitter', username: ta.username).first %>
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p>
+    <small>
+        <a href="https://twitter.com/i/status/<%= event[:content][:tweet_id] %>"> 
+        <%= ta.username %> <% if event[:content][:is_retweet] %>RT <% if event[:content][:retweet_data] %><%= event[:content][:retweet_data][:username] %><% else %>Unknown<% end %><% end %>
+      </a>
+    </small>
+  </p>
+</header>
+<div class="card-body">
+  <p>
+    <% tweet = event[:content].text %>
+    <% tweet = tweet.gsub(/pic\.twitter\.com\/[a-zA-Z0-9]*/, '') %>
+    <% tweet = tweet.gsub(/(https:\/\/t.co\/).*/).with_index { |_, i|
+      "<a href=\"#{event[:content].entries[:urls][i]}\">#{event[:content].entries[:urls][i]}</a>"
+      }
+    %>
+    <% tweet = tweet.gsub("\n", '<br />') %>
+    <%= raw(tweet) %>
+
+    <% if event[:content]['is_quoting'] && event[:content].quoting_data %>
+      <br /><br />
+      <strong><a href="https://twitter.com<%= event[:content].quoting_data[:permalink] %>"><%= event[:content].quoting_data[:username] %>:</a></strong>
+      <div style="padding-left: 20px">
+        <% if event[:content].quoting && event[:content].quoting.text %>
+          <% tweet = event[:content].quoting.text %>
+        <% else %>
+          <% tweet = '' %>
+        <% end %>
+        <% tweet = tweet.gsub(/pic\.twitter\.com\/[a-zA-Z0-9]*/, '') %>
+        <% tweet = tweet.gsub(/(https:\/\/t.co\/).*/).with_index { |_, i|
+          "<a href=\"#{event[:content].quoting.entries[:urls][i]}\">#{event[:content].quoting.entries[:urls][i]}</a>"
+          }
+        %>
+        <% tweet = tweet.gsub("\n", '<br />') %>
+        <%= raw(tweet) %>
+      </div>
+    <% end %>
+
+    <% if event[:content][:is_retweet] && event[:content].original %>
+      <% photos = event[:content].original[:entries][:photos] %>
+    <% else %>
+      <% photos = event[:content][:entries][:photos] %>
+    <% end %>
+    <% photos.each do |photo| %>
+      <a href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>" data-fancybox="twitter_<%= event[:content][:tweet_id] %>">
+        <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>" />
+      </a>
+    <% end %>
+  </p>
+</div>

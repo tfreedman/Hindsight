@@ -37,6 +37,8 @@ module ApplicationHelper
       "YouTube"
     elsif k.include?('deviantart_post')
       "DeviantArt"
+    elsif k.include?('sociallink')
+      "SocialLink"
     else
       k
     end

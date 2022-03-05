@@ -103,10 +103,20 @@
                   <%= render 'application/irc_log', event: event %>
                 <% elsif event[:type].start_with?("xchat_log_") %>
                   <%= render 'application/irc_log', event: event %>
-                <% elsif event[:type].start_with?("youtube_video") %>
-                  <%= render 'application/youtube_video', event: event %>
-                <% elsif event[:type].start_with?("deviantart_post") %>
-                  <%= render 'application/deviantart_post', event: event %>
+                <% elsif event[:type].start_with?("sociallink") %>
+                  <% if event[:sub_type] == 'youtube_video' %>
+                    <%= render 'application/youtube_video', event: event %>
+                  <% elsif event[:sub_type] == "deviantart_post" %>
+                    <%= render 'application/deviantart_post', event: event %>
+                  <% elsif event[:sub_type] == "pixiv_post" %>
+                    <%= render 'application/pixiv_post', event: event %>
+                  <% elsif event[:sub_type] == "webcomic_strip" %>
+                    <%= render 'application/webcomic_strip', event: event %>
+                  <% elsif event[:sub_type] == "instagram_post" %>
+                    <%= render 'application/instagram_post', event: event %>
+                  <% elsif event[:sub_type] == "twitter_tweet" %>
+                    <%= render 'application/twitter_tweet', event: event %>
+                  <% end %>
                 <% elsif event[:type].start_with?("email_message") %>
                   <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
                     <p class="<% if event[:content][:account] == event[:content][:from] %>sent<% else %>received<% end %>">

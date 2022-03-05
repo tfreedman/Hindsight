@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   def auth
     if params[:key] == Hindsight::Application.credentials.auth_token
       #session[:key] = "hello!"
-      render plain: ":)"
+      render plain: ":)" and return
     end
     render plain: ":(" and return
   end
@@ -243,12 +243,33 @@ class ApplicationController < ActionController::Base
     if Hindsight::Application.credentials.sociallink_integration
       youtube_videos = YoutubeVideo.where(published_at: @date.beginning_of_day..@date.end_of_day).all
       youtube_videos.each do |y|
-        @events << {sort_time: y.published_at.to_i, type: 'youtube_video', content: y}
+        @events << {sort_time: y.published_at.to_i, type: 'sociallink', sub_type: 'youtube_video', content: y}
       end
 
       deviantart_posts = DeviantartPost.where(pubdate: @date.beginning_of_day..@date.end_of_day).all
       deviantart_posts.each do |d|
-        @events << {sort_time: d.pubdate.to_i, type: 'deviantart_post', content: d}
+        @events << {sort_time: d.pubdate.to_i, type: 'sociallink', sub_type: 'deviantart_post', content: d}
+      end
+
+      pixiv_posts = PixivPost.where(created_at: @date.beginning_of_day..@date.end_of_day).all
+      pixiv_posts.each do |p|
+        @events << {sort_time: p.created_at.to_i, type: 'sociallink', sub_type: 'pixiv_post', content: p}
+      end
+
+      webcomic_strips = Webcomic.where(date: @date).all
+      webcomic_strips.each do |w|
+        @events << {sort_time: w.date.beginning_of_day.to_i, type: 'sociallink', sub_type: 'webcomic_strip', content: w}
+      end
+
+      instagram_posts = InstagramPost.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
+      instagram_posts.each do |i|
+        @events << {sort_time: i.timestamp, type: 'sociallink', sub_type: 'instagram_post', content: i}
+      end
+
+      twitter_accounts = TwitterAccount.pluck(:user_id)
+      twitter_tweets = TwitterTweet.where(time: @date.beginning_of_day..@date.end_of_day, user_id: twitter_accounts).all
+      twitter_tweets.each do |t|
+        @events << {sort_time: t.time.to_i, type: 'sociallink', sub_type: 'twitter_tweet', content: t}
       end
     end
 

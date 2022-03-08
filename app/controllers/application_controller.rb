@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::Base
-  before_action :generate_name_lookup_table
   before_action :check_session_keys, except: [:auth]
 
   include UserFilters
@@ -36,30 +35,6 @@ class ApplicationController < ActionController::Base
       @events[summary.date][summary.event_type] = summary.count
       @totals[summary.event_type] += summary.count
     end
-  end
-
-  def generate_name_lookup_table
-    contacts = []
-    address_books = YAML.load(File.read("contacts.yml")) ; nil
-    address_books.each do |key, value|
-      value.each do |contact|
-        contacts << contact
-      end
-    end ; nil
-
-    @names = []
-    contacts.each do |contact|
-      vcard = VCardigan.parse(contact[:card])
-      person = {name: vcard.fn.first.values[0], uid: vcard.uid.first.values[0], vcard: vcard}
-      @names << person
-    end
-  end
-
-  def name_to_contact(name)
-    @names.each do |n|
-      return n if n[:name] == name
-    end
-    return nil
   end
 
   def date
@@ -121,9 +96,9 @@ class ApplicationController < ActionController::Base
       next if photo.lightroom_rating == 1.0
 
       phototags = photo.lightroom_phototags.collect{ |name| 
-        contact = name_to_contact(name)
-        if contact && Hindsight::Application.credentials.sociallink_integration
-          "<a href=\"https://#{Hindsight::Application.credentials.sociallink_url}/profiles/#{contact[:uid]}\">#{name}</a>"
+        snpc = ServiceNamePathCache.where(name: name).first
+        if snpc && Hindsight::Application.credentials.sociallink_integration
+          "<a href=\"https://#{Hindsight::Application.credentials.sociallink_url}/profiles/#{snpc.uid}\">#{name}</a>"
         else
           name
         end
@@ -284,8 +259,8 @@ class ApplicationController < ActionController::Base
     Dir.foreach(Hindsight::Application.credentials.magazines_path) do |magazine|
       next if magazine == '.' or magazine == '..' or !File.directory?(Hindsight::Application.credentials.magazines_path)
       Dir.foreach(Hindsight::Application.credentials.magazines_path + magazine) do |issue|
-        next if issue == '.' or issue == '..'
-        if issue.start_with? @date.strftime("%Y-%m")
+        next if issue == '.' or issue == '..' or issue == '.DS_Store'
+        if issue.start_with? @date.strftime("%Y-%m ")
           magazines << {name: issue.split(@date.strftime("%Y-%m "))[1].split('.')[0], url: "https://#{Hindsight::Application.credentials.development_hosts[0]}/magazines/#{magazine}/#{issue}"}
         end
       end

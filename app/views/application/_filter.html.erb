@@ -1,0 +1,5 @@
+<% if @totals[key] > 0 %>
+  <li data-service="<%= key %>">
+    <input autocomplete="off" type="checkbox" checked="true" id="<%= key %>" /> <label for="<%= key %>"><%= text %> (<%= @totals[key] || 0 %>)</label>
+  </li>
+<% end %>

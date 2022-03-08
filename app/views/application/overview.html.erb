@@ -17,82 +17,12 @@
       <li>
         <strong>Instant Messaging:</strong>
         <ul>
-          <% if @totals['AdiumMessage'] > 0 %>
-            <li data-service="AdiumMessage">
-              <input autocomplete="off" type="checkbox" checked="true" id="AdiumMessage" /> <label for="AdiumMessage">Adium (<%= @totals['AdiumMessage'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['ColloquyMessage'] > 0 %>
-            <li data-service="ColloquyMessage">
-              <input autocomplete="off" type="checkbox" checked="true" id="ColloquyMessage" /> <label for="ColloquyMessage">Colloquy (<%= @totals['ColloquyMessage'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['FacebookMessage'] > 0 %>
-            <li data-service="FacebookMessage">
-              <input autocomplete="off" type="checkbox" checked="true" id="FacebookMessage" /> <label for="FacebookMessage">Facebook (<%= @totals['FacebookMessage'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['EmailMessage'] > 0 %>
-            <li data-service="EmailMessage">
-              <input autocomplete="off" type="checkbox" checked="true" id="EmailMessage" /> <label for="EmailMessage">Emails (<%= @totals['EmailMessage'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['HangoutsEvent'] > 0 %>
-            <li data-service="HangoutsEvent">
-              <input autocomplete="off" type="checkbox" checked="true" id="HangoutsEvent" /> <label for="HangoutsEvent">Hangouts (<%= @totals['HangoutsEvent'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['LoungeLog'] > 0 %>
-            <li data-service="LoungeLog">
-              <input autocomplete="off" type="checkbox" checked="true" id="LoungeLog" /> <label for="MamircEvent">Lounge / Shout (<%= @totals['LoungeLog'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['MamircEvent'] > 0 %>
-            <li data-service="MamircEvent">
-              <input autocomplete="off" type="checkbox" checked="true" id="MamircEvent" /> <label for="MamircEvent">MamIRC (<%= @totals['MamircEvent'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['MircLog'] > 0 %>
-            <li data-service="MircLog">
-              <input autocomplete="off" type="checkbox" checked="true" id="MircLog" /> <label for="MircLog">mIRC (<%= @totals['MircLog'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['MatrixEvent'] > 0 %>
-            <li data-service="MatrixEvent">
-              <input autocomplete="off" type="checkbox" checked="true" id="MatrixEvent" /> <label for="MatrixEvent">Matrix (<%= @totals['MatrixEvent'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['PidginMessage'] > 0 %>
-            <li data-service="PidginMessage">
-              <input autocomplete="off" type="checkbox" checked="true" id="PidginMessage" /> <label for="PidginMessage">Pidgin (<%= @totals['PidginMessage'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['AndroidSms'] > 0 %>
-            <li data-service="AndroidSms">
-              <input autocomplete="off" type="checkbox" checked="true" id="AndroidSms" /> <label for="AndroidSms">SMS (Android) (<%= @totals['AndroidSms'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['WindowsPhoneSms'] > 0 %>
-            <li data-service="WindowsPhoneSms">
-              <input autocomplete="off" type="checkbox" checked="true" id="WindowsPhoneSms" /> <label for="WindowsPhoneSms">SMS (Windows Phone) (<%= @totals['WindowsPhoneSms'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['XchatLog'] > 0 %>
-            <li data-service="XchatLog">
-              <input autocomplete="off" type="checkbox" checked="true" id="XchatLog" /> <label for="XchatLog">X-Chat (<%= @totals['XchatLog'] || 0 %>)</label>
-            </li>
+          <% services = {
+          'AdiumMessage' => 'Adium', 'ColloquyMessage' => 'Colloquy', 'FacebookMessage' => 'Facebook', 'EmailMessage' => 'Emails',
+          'HangoutsEvent' => 'Hangouts', 'LoungeLog' => 'Lounge / Shout', 'MamircEvent' => 'MamIRC', 'MircLog' => 'mIRC', 'MatrixEvent' => 'Matrix',
+          'PidginMessage' => 'Pidgin', 'AndroidSms' => 'SMS (Android)', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'XchatLog' => 'X-Chat'} %>
+          <% services.each do |k, v| %>
+            <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
           <% end %>
         </ul>
       </li>
@@ -102,16 +32,9 @@
       <li>
         <strong>Transportation:</strong>
         <ul>
-          <% if @totals['BikeshareTrip'] > 0 %>
-            <li data-service="BikeshareTrip">
-              <input autocomplete="off" type="checkbox" checked="true" id="BikeshareTrip" /> <label for="BikeshareTrip">Bikeshare Trips (<%= @totals['BikeshareTrip'] || 0 %>)</label>
-            </li>
-          <% end %>
-                
-          <% if @totals['PrestoTrip'] > 0 %>
-            <li data-service="PrestoTrip">
-              <input autocomplete="off" type="checkbox" checked="true" id="PrestoTrip" /> <label for="PrestoTrip">Presto Trips (<%= @totals['PrestoTrip'] || 0 %>)</label>
-            </li>
+          <% services = {'BikeshareTrip' => 'Bikeshare Trips', 'PrestoTrip' => 'Presto Trips'} %>
+          <% services.each do |k, v| %>
+            <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
           <% end %>
         </ul>
       </li>
@@ -121,46 +44,10 @@
       <li>
         <strong>Other:</strong>
         <ul>
-          <% if @totals['CalendarEvent'] > 0 %>
-            <li data-service="CalendarEvent">
-              <input autocomplete="off" type="checkbox" checked="true" id="CalendarEvent" /> <label for="CalendarEvent">Calendar Events (<%= @totals['CalendarEvent'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['CalendarHoliday'] > 0 %>
-            <li data-service="CalendarHoliday">
-              <input autocomplete="off" type="checkbox" checked="true" id="CalendarHoliday" /> <label for="CalendarHoliday">Holidays (<%= @totals['CalendarHoliday'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['FinancialTransaction'] > 0 %>
-            <li data-service="FinancialTransaction">
-              <input autocomplete="off" type="checkbox" checked="true" id="FinancialTransaction" /> <label for="FinancialTransaction">Financial Transactions (<%= @totals['FinancialTransaction'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['FitbitMeasurement'] > 0 %>
-            <li data-service="FitbitMeasurement">
-              <input autocomplete="off" type="checkbox" checked="true" id="FitbitMeasurement" /> <label for="FitbitMeasurement">Fitbit Measurements (<%= @totals['FitbitMeasurement'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['GitHubCommit'] > 0 %>
-            <li data-service="GitHubCommit">
-              <input autocomplete="off" type="checkbox" checked="true" id="GitHubCommit" /> <label for="GitHubCommit">GitHub Commits (<%= @totals['GitHubCommit'] || 0 %>)</label>
-            </li>
-          <% end %>
-  
-          <% if @totals['Photo'] > 0 %>
-            <li data-service="Photo">
-              <input autocomplete="off" type="checkbox" checked="true" id="Photo" /> <label for="Photo">Photos (<%= @totals['Photo'] || 0 %>)</label>
-            </li>
-          <% end %>
-
-          <% if @totals['PhotoAlbum'] > 0 %>
-            <li data-service="PhotoAlbum">
-              <input autocomplete="off" type="checkbox" checked="true" id="PhotoAlbum" /> <label for="PhotoAlbum">Photo Album Dates (<%= @totals['PhotoAlbum'] || 0 %>)</label>
-            </li>
+          <% services = {'CalendarEvent' => 'Calendar Events', 'CalendarHoliday' => 'Holidays', 'FinancialTransaction' => 'Financial Transactions', 
+          'FitbitMeasurement' => 'Fitbit Measurements', 'GitHubCommit' => 'GitHub Commits', 'Photo' => 'Photos', 'PhotoAlbum' => 'Photo Album Dates'} %>
+          <% services.each do |k, v| %>
+            <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
           <% end %>
         </ul>
       </li>

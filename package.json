@@ -7,9 +7,9 @@
     "@rails/activestorage": "^7.0.2-2",
     "@rails/ujs": "^7.0.2-2",
     "@rails/webpacker": "5.4.3",
+    "clean": "^4.0.2",
     "fancybox": "^3.0.1",
     "jquery": "^3.4.1",
-    "clean": "^4.0.2",
     "turbolinks": "^5.2.0",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12"

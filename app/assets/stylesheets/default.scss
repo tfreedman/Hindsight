@@ -95,6 +95,11 @@ body#overview {
               vertical-align: middle;
 
               a {margin: 0 auto}
+
+              &.today {
+                background: none;
+                a.selected-date {background: #EA0B9D !important}
+              }
   
               &.current-month a.selected-date {
                 background: #7D48A2;
@@ -108,6 +113,7 @@ body#overview {
             }
 
             .day {
+              width: 50px;
               height: 60px;
               &.prev-month, &.next-month {
                 background: none;
@@ -181,7 +187,7 @@ body#date {
     section.items {
       word-wrap: break-word;
       width: calc(100% - 300px);
-      img {width: 100%}
+      img, video {width: 100%}
       position: relative;
       z-index: 1;
 
@@ -346,6 +352,11 @@ body#date {
               display: block;
               border-radius: 50px;
               color: #FFF;
+            }
+
+            &.today {
+              background: none;
+              a {color: #EA0B9D}
             }
           }
 

@@ -16,7 +16,9 @@ module ApplicationHelper
     elsif k.include?('pidgin_message_')
       k.gsub('pidgin_message_', '')
     elsif k.include?('calendar_event_')
-      k.gsub('calendar_event_', '').downcase.capitalize + ' (Calendar)'
+      k = k.gsub('calendar_event_', '')
+      k = k[0..-10] if k.downcase.ends_with?(' calendar')
+      k + ' (Calendar)'
     elsif k.include?('adium_message_')
       k.gsub('adium_message_', '')
     elsif k.include?('mirc_log_')

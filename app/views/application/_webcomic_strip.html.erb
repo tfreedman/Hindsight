@@ -1,13 +1,27 @@
 <% snpc = ServiceNamePathCache.where(service: 'Webcomic', username: event[:content][:comic]).first %>
+<% json = JSON.parse(event[:content][:payload]) %>
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
   <p class="">
-    <small><%= snpc.name %></small>
+    <small><%= snpc.name %>
+      <% if json && json["url"] && json["title"] %>
+        - <a href="<%= json['url'] %>"><em><%= json["title"] %></em></a>
+      <% elsif json && json["title"] %>
+        - <em><%= json["title"] %></em>
+      <% end %>
+    </small>
   </p>
 </header>
 <div class="card-body">
   <p>
-    <a data-fancybox="webcomic_<%= event[:content][:strip] %>" href='<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{event[:content][:filename]}" %>'>
-      <img src='<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{event[:content][:filename]}" %>'/>
-    </a>
+    <% if event[:content][:filename] %>
+      <a data-fancybox="webcomic_<%= event[:content][:strip] %>" href='<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{event[:content][:filename]}" %>'>
+        <img src='<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{event[:content][:filename]}" %>'/>
+      </a>
+    <% end %>
   </p>
+  <% if json && json["alt"] %>
+    <p class="neutral">
+      <em><%= json['alt'] %></em>
+    </p>
+  <% end %>
 </div>

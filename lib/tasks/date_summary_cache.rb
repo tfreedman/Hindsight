@@ -27,6 +27,7 @@
       'PhotoAlbum',
       'PidginMessage',
       'PrestoTrip',
+      'SkypeMessage',
       'WindowsPhoneSms',
       'XchatLog'
     ] 
@@ -159,6 +160,11 @@
         end
       elsif event_type == "PrestoTrip"
         PrestoTrip.find_each do |e|
+          event_date = Time.at(e.timestamp.to_i).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == "SkypeMessage"
+        SkypeMessage.find_each do |e|
           event_date = Time.at(e.timestamp.to_i).to_date.to_s
           dates[event_date] += 1
         end

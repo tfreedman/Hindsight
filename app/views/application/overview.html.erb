@@ -20,7 +20,7 @@
           <% services = {
           'AdiumMessage' => 'Adium', 'ColloquyMessage' => 'Colloquy', 'FacebookMessage' => 'Facebook', 'EmailMessage' => 'Emails',
           'HangoutsEvent' => 'Hangouts', 'LoungeLog' => 'Lounge / Shout', 'MamircEvent' => 'MamIRC', 'MircLog' => 'mIRC', 'MatrixEvent' => 'Matrix',
-          'PidginMessage' => 'Pidgin', 'AndroidSms' => 'SMS (Android)', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'XchatLog' => 'X-Chat'} %>
+          'PidginMessage' => 'Pidgin', 'AndroidSms' => 'SMS (Android)', 'SkypeMessage' => 'Skype', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'XchatLog' => 'X-Chat'} %>
           <% services.each do |k, v| %>
             <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
           <% end %>

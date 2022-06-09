@@ -39,6 +39,8 @@ module ApplicationHelper
       "YouTube"
     elsif k.include?('deviantart_post')
       "DeviantArt"
+    elsif k.include?('skype_message_')
+      k.gsub('skype_message_', '')
     elsif k.include?('sociallink')
       "SocialLink"
     else

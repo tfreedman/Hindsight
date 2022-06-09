@@ -103,6 +103,8 @@
                   <%= render 'application/irc_log', event: event %>
                 <% elsif event[:type].start_with?("xchat_log_") %>
                   <%= render 'application/irc_log', event: event %>
+                <% elsif event[:type].start_with?("skype_message_") %>
+                  <%= render 'application/skype_message', event: event %>
                 <% elsif event[:type].start_with?("sociallink") %>
                   <% if event[:sub_type] == 'youtube_video' %>
                     <%= render 'application/youtube_video', event: event %>
@@ -162,8 +164,12 @@
                   </header>
                   <div class="card-body">
                     <p class="<% if event[:content][:real_name] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
-                      <% event[:content][:chat_message]["message_content"]["segment"].each do |segment| %>
-                        <%= segment["text"] %>
+                      <% begin %>
+                        <% event[:content][:chat_message]["message_content"]["segment"].each do |segment| %>
+                          <%= segment["text"] %>
+                        <% end %>
+                      <% rescue %>
+                        ???
                       <% end %>
                     </p>
                   </div>

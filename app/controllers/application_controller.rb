@@ -89,6 +89,8 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: call.date / 1000, type: 'android_call', content: call}
     end
 
+    if false
+
     photos = Photo.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     photos.each do |photo|
       logger.info photo.id
@@ -105,6 +107,8 @@ class ApplicationController < ActionController::Base
       }.to_sentence
       @events << {sort_time: photo.timestamp, type: 'Photos', content: photo, caption: phototags}
     end
+    end
+
 
     windows_phone_sms = WindowsPhoneSms.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     windows_phone_sms.each do |sms|
@@ -203,6 +207,11 @@ class ApplicationController < ActionController::Base
     presto_trips = PrestoTrip.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     presto_trips.each do |trip|
       @events << {sort_time: trip.timestamp.to_i, type: 'presto_trip', content: trip}
+    end
+
+    skype_messages = SkypeMessage.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
+    skype_messages.each do |message|
+      @events << {sort_time: message.timestamp, type: 'skype_message_' + message.room_name, content: message}
     end
 
     fitbit_measurements = FitbitMeasurement.where(:logId => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all

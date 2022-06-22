@@ -35,6 +35,8 @@ module ApplicationHelper
       "GitHub Commits"
     elsif k.include?('android_call')
       "Call Log"
+    elsif k.include?('google_talk_message_')
+      k.gsub('google_talk_message_', '') + ' (GTalk)'
     elsif k.include?('youtube_video')
       "YouTube"
     elsif k.include?('deviantart_post')

@@ -18,6 +18,7 @@
       'FinancialTransaction',
       'FitbitMeasurement',
       'GitHubCommit',
+      'GoogleTalkMessage',
       'HangoutsEvent',
       'LoungeLog',
       'MamircEvent',
@@ -111,6 +112,11 @@
       elsif event_type == 'GitHubCommit'
         GitHubCommit.find_each do |e|
           event_date = Time.at(e.timestamp).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'GoogleTalkMessage'
+        GoogleTalkMessage.where(enabled: true).find_each do |e|
+          event_date = e.timestamp.to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == 'HangoutsEvent'

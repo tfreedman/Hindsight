@@ -176,6 +176,11 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: (message.timestamp / 1000).to_i, content: message, type: 'facebook_message_' + message.room.title}
     end
 
+    google_talk_messages = GoogleTalkMessage.where(enabled: true).where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day)).all
+    google_talk_messages.each do |g|
+      @events << {sort_time: g.timestamp.to_i, content: g, type: 'google_talk_message_' + g.room}
+    end
+
     xchat_logs = XchatLog.where(enabled: true).where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day)).all
     xchat_logs.each do |log|
       @events << {sort_time: log.timestamp.to_i, content: log, type: 'xchat_log_' + log.room}

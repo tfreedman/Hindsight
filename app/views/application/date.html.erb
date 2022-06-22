@@ -97,6 +97,17 @@
                       <%= event[:content][:message].html_safe %>
                     </p>
                   </div>
+                <% elsif event[:type].start_with?("google_talk_message_") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:real_sender] || event[:content][:sender] %></small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <%= event[:content][:message] %>
+                    </p>
+                  </div>
                 <% elsif event[:type].start_with?("mirc_log_") %>
                   <%= render 'application/irc_log', event: event %>
                 <% elsif event[:type].start_with?("lounge_log_") %>

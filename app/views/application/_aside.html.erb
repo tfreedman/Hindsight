@@ -89,6 +89,28 @@
             </li>
           <% end %>
         </ul>
+      <% elsif key == :nintendo_3ds_activity_event %>
+        <h3>Nintendo 3DS Playtime:</h3>
+        <ul>
+          <% array.each do |n| %>
+            <li class="n3ds-playtime details" style="border-top-color: <%= colors('n3ds-playtime') %>">
+              <div class="card-body">
+                <i class="fas fa-gamepad"></i> <%= n[:content][:game] %> (<%= n[:content][:play_time] %>)
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% elsif key == :wii_playtime %>
+        <h3>Nintendo Wii Playtime:</h3>
+        <ul>
+          <% array.each do |n| %>
+            <li class="wii-playtime details" style="border-top-color: <%= colors('wii-playtime') %>">
+              <div class="card-body">
+                <i class="fas fa-gamepad"></i> <%= n[:content][:game] %> (<%= Time.at(n[:content][:playtime] * 60).utc.strftime("%H:%M") %>)
+              </div>
+            </li>
+          <% end %>
+        </ul>
       <% end %>
     <% end %>
   <% end %>

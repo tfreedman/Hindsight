@@ -12,15 +12,15 @@
     <h3>Filter By:</h3>
 
     <ul class="services">
-      <% if (@totals['AdiumMessage'] + @totals['ColloquyMessage'] + @totals['FacebookMessage'] + @totals['EmailMessage'] + @totals['GoogleTalkMessage'] + @totals['HangoutsEvent'] + @totals['LoungeLog'] + @totals['MircLog'] + @totals['MatrixEvent'] + 
-          @totals['PidginMessage'] + @totals['AndroidSms'] + @totals['WindowsPhoneSms'] + @totals['XchatLog']) > 0 %>
+      <% if (@totals['AdiumMessage'] + @totals['ColloquyMessage'] + @totals['FacebookMessage'] + @totals['EmailMessage'] + @totals['GoogleChatMessage'] + @totals['GoogleTalkMessage'] + @totals['HangoutsEvent'] + @totals['LoungeLog'] + @totals['MircLog'] + @totals['MatrixEvent'] + 
+          @totals['PidginMessage'] + @totals['AndroidSms'] + @totals['WindowsPhoneSms'] + @totals['VoipmsSms'] + @totals['XchatLog']) > 0 %>
       <li>
         <strong>Instant Messaging:</strong>
         <ul>
           <% services = {
-          'AdiumMessage' => 'Adium', 'ColloquyMessage' => 'Colloquy', 'FacebookMessage' => 'Facebook', 'EmailMessage' => 'Emails', 'GoogleTalkMessage' => 'Google Talk Messages',
+          'AdiumMessage' => 'Adium', 'ColloquyMessage' => 'Colloquy', 'FacebookMessage' => 'Facebook', 'EmailMessage' => 'Emails', 'GoogleChatMessage' => 'Google Chat Messages', 'GoogleTalkMessage' => 'Google Talk Messages',
           'HangoutsEvent' => 'Hangouts', 'LoungeLog' => 'Lounge / Shout', 'MamircEvent' => 'MamIRC', 'MircLog' => 'mIRC', 'MatrixEvent' => 'Matrix',
-          'PidginMessage' => 'Pidgin', 'AndroidSms' => 'SMS (Android)', 'SkypeMessage' => 'Skype', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'XchatLog' => 'X-Chat'} %>
+          'PidginMessage' => 'Pidgin', 'AndroidSms' => 'SMS (Android)', 'SkypeMessage' => 'Skype', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'VoipmsSms' => 'SMS (Voip.ms)', 'XchatLog' => 'X-Chat'} %>
           <% services.each do |k, v| %>
             <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
           <% end %>
@@ -40,18 +40,31 @@
       </li>
     <% end %>
 
-    <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent'] + @totals['CalendarHoliday'] + @totals['PhotoAlbum']) > 0 %>
+    <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent'] + @totals['CalendarHoliday'] + @totals['PhotoAlbum'] + @totals['N3dsActivityEvent'] + @totals['WiiPlaytime']) > 0 %>
       <li>
         <strong>Other:</strong>
         <ul>
           <% services = {'CalendarEvent' => 'Calendar Events', 'CalendarHoliday' => 'Holidays', 'FinancialTransaction' => 'Financial Transactions', 
-          'FitbitMeasurement' => 'Fitbit Measurements', 'GitHubCommit' => 'GitHub Commits', 'Photo' => 'Photos', 'PhotoAlbum' => 'Photo Album Dates'} %>
+          'FitbitMeasurement' => 'Fitbit Measurements', 'ForumPost' => 'Forum Posts', 'GitHubCommit' => 'GitHub Commits', 'Photo' => 'Photos', 'PhotoAlbum' => 'Photo Album Dates', 'N3dsActivityEvent' => 'Nintendo 3DS Events', 'WiiPlaytime' => 'Nintendo Wii Playtime'} %>
           <% services.each do |k, v| %>
             <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
           <% end %>
         </ul>
       </li>
     <% end %>
+
+    <% if (@totals['HindsightFilePSD'] + @totals['HindsightFileDOC'] + @totals['HindsightFileAI']) > 0 %>
+      <li>
+        <strong>Files:</strong>
+        <ul>
+          <% services = {'HindsightFilePSD' => 'Photoshop', 'HindsightFileDOC' => 'Documents', 'HindsightFileAI' => 'Illustrator'} %>
+          <% services.each do |k, v| %>
+            <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
+          <% end %>
+        </ul>
+      </li>
+    <% end %>
+
   </ul>
 
     <div class="tomorrow">

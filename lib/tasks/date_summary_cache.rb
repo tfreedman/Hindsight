@@ -17,20 +17,28 @@
       'FacebookMessage',
       'FinancialTransaction',
       'FitbitMeasurement',
+      'ForumPost',
       'GitHubCommit',
+      'GoogleChatMessage',
       'GoogleTalkMessage',
       'HangoutsEvent',
+      'HindsightFileDOC',
+      'HindsightFilePSD',
+      'HindsightFileAI',
       'LoungeLog',
       'MamircEvent',
       'MatrixEvent',
       'MircLog',
+      'N3dsActivityEvent',
       'Photo',
       'PhotoAlbum',
       'PidginMessage',
       'PrestoTrip',
       'SkypeMessage',
+      'VoipmsSms',
       'WindowsPhoneSms',
-      'XchatLog'
+      'XchatLog',
+      'WiiPlaytime'
     ] 
 
     DateSummary.delete_all # Clear the cache
@@ -109,9 +117,19 @@
           event_date = Time.at(e.logId).to_date.to_s
           dates[event_date] += 1
         end
+      elsif event_type == "ForumPost"
+        ForumPost.find_each do |e|
+          event_date = Time.at(e.timestamp).to_date.to_s
+          dates[event_date] += 1
+        end
       elsif event_type == 'GitHubCommit'
         GitHubCommit.find_each do |e|
           event_date = Time.at(e.timestamp).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'GoogleChatMessage'
+        GoogleChatMessage.where(enabled: true).find_each do |e|
+          event_date = Time.at(e.created_date).to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == 'GoogleTalkMessage'
@@ -122,6 +140,33 @@
       elsif event_type == 'HangoutsEvent'
         HangoutsEvent.where(enabled: true).find_each do |e|
           event_date = Time.at(e.timestamp / 1000000).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'HindsightFileDOC'
+        HindsightFile.where(extension: ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx']).find_each do |e|
+          event_date = e.created_at.to_date.to_s
+          dates[event_date] += 1
+        end
+        HindsightFile.where(extension: ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx']).find_each do |e|
+          event_date = e.modified_at.to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'HindsightFilePSD'
+        HindsightFile.where(extension: 'psd').find_each do |e|
+          event_date = e.created_at.to_date.to_s
+          dates[event_date] += 1
+        end
+        HindsightFile.where(extension: 'psd').find_each do |e|
+          event_date = e.modified_at.to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'HindsightFileAI'
+        HindsightFile.where(extension: 'ai').find_each do |e|
+          event_date = e.created_at.to_date.to_s
+          dates[event_date] += 1
+        end
+        HindsightFile.where(extension: 'ai').find_each do |e|
+          event_date = e.modified_at.to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == "LoungeLog"
@@ -144,6 +189,10 @@
         MircLog.find_each do |e|
           event_date = e.timestamp.to_date.to_s
           dates[event_date] += 1
+        end
+      elsif event_type == 'N3dsActivityEvent'
+        N3dsActivityEvent.find_each do |e|
+          dates[e.date] += 1
         end
       elsif event_type == "Photo"
         Photo.find_each do |e|
@@ -173,6 +222,15 @@
         SkypeMessage.find_each do |e|
           event_date = Time.at(e.timestamp.to_i).to_date.to_s
           dates[event_date] += 1
+        end
+      elsif event_type == "VoipmsSms"
+        VoipmsSms.find_each do |e|
+          event_date = Time.at(e.date).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'WiiPlaytime'
+        WiiPlaytime.find_each do |e|
+          dates[e.date] += 1
         end
       elsif event_type == "WindowsPhoneSms"
         WindowsPhoneSms.find_each do |e|

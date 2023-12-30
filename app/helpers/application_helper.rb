@@ -13,6 +13,8 @@ module ApplicationHelper
       k.split('email_message_')[1] + ' (email)'
     elsif k.include?('facebook_message_')
       k.gsub('facebook_message_', '')
+    elsif k.include?('forum_post')
+      "Forum Posts"
     elsif k.include?('pidgin_message_')
       k.gsub('pidgin_message_', '')
     elsif k.include?('calendar_event_')
@@ -35,8 +37,12 @@ module ApplicationHelper
       "GitHub Commits"
     elsif k.include?('android_call')
       "Call Log"
+    elsif k.include?('google_chat_message_')
+      k.gsub('google_chat_message_', '') + ' (Hangouts)'
     elsif k.include?('google_talk_message_')
       k.gsub('google_talk_message_', '') + ' (GTalk)'
+    elsif k.include?('hindsight_file')
+      'Files'
     elsif k.include?('youtube_video')
       "YouTube"
     elsif k.include?('deviantart_post')

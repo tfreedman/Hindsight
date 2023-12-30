@@ -47,6 +47,13 @@
                   <div class="card-body">
                     <%= ((event[:content][:weight] / 1000.0) * 2.2).round(2) %> lb
                   </div>
+                <% elsif event[:type] == "forum_post" %>
+                  <header class="sent" style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <%= event[:content][:site] %>: <%= raw event[:content][:thread_title] %>
+                  </header>
+                  <div class="card-body">
+                    <%= raw event[:content][:text] %>
+                  </div>
                 <% elsif event[:type] == "github_commit" %>
                   <div class="card-body">
                     <a href="<%= event[:content][:html_url] %>">
@@ -95,6 +102,17 @@
                   <div class="card-body">
                     <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
                       <%= event[:content][:message].html_safe %>
+                    </p>
+                  </div>
+                <% elsif event[:type].start_with?("google_chat_message_") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:real_sender] || event[:content][:sender] %></small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                    <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+                      <%= event[:content][:text] %>
                     </p>
                   </div>
                 <% elsif event[:type].start_with?("google_talk_message_") %>
@@ -163,6 +181,16 @@
                       <%= event[:content][:body] %>
                     </p>
                   </div>
+                <% elsif event[:type].start_with?("voipms_sms_") %>
+                  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+                    <p class="<% if event[:content][:sms_type] == "1" %>sent<% else %>received<% end %>">
+                      <small><%= event[:content][:contact] %> (<%= event[:content][:contact] %>):</small>
+                    </p>
+                  </header>
+                  <div class="card-body">
+                      <%= event[:content][:message] %>
+                    </p>
+                  </div>
                 <% elsif event[:type].start_with?("calendar_event") %>
                   <div class="card-body">
                     <%= event[:content][:summary] %>
@@ -183,6 +211,11 @@
                         ???
                       <% end %>
                     </p>
+                  </div>
+                <% elsif event[:type].start_with?('hindsight_file') %>
+                  <div class="card-body">
+                    <p class="neutral">
+                      <%= event[:content][:path] %> (<%= event[:kind] %>)
                   </div>
                 <% elsif event[:type] == 'Photos' %>
                   <div class="card-body">

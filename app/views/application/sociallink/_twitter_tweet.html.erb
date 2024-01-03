@@ -45,9 +45,16 @@
       <% photos = event[:content][:entries][:photos] %>
     <% end %>
     <% photos.each do |photo| %>
-      <a href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>" data-fancybox="twitter_<%= event[:content][:tweet_id] %>">
-        <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>" />
-      </a>
+      <% if photo.class == Hash && photo['URL'] %>
+        <a href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo['URL'].split('/')[-1].split('.')[0]}-orig.#{photo['URL'].split('/')[-1].split('.')[1]}" %>" data-fancybox="twitter_<%= event[:content][:tweet_id] %>">
+          <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo['URL'].split('/')[-1].split('.')[0]}-orig.#{photo['URL'].split('/')[-1].split('.')[1]}" %>" />
+        </a>
+      <% elsif photo.class == String %>
+        <a href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>"
+  data-fancybox="twitter_<%= event[:content][:tweet_id] %>">
+          <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>" />
+        </a>
+      <% end %>
     <% end %>
   </p>
 </div>

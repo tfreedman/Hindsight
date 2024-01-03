@@ -1,0 +1,6 @@
+<header class="sent" style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <%= event[:content][:site] %>: <%= raw event[:content][:thread_title] %>
+</header>
+<div class="card-body">
+  <%= raw event[:content][:text] %>
+</div>

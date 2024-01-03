@@ -1,0 +1,7 @@
+<div class="card-body">
+  <p class="<% if event[:content]['is_sent'] %>sent<% else %>received<% end %>">
+    <small><%= event[:content][:real_name] %> (<%= event[:content][:phone_number] %>):</small>
+    <br />
+    <%= event[:content]["body"] %>
+  </p>
+</div>

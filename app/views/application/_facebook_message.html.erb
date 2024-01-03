@@ -1,0 +1,10 @@
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p class="<% if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>sent<% else %>received<% end %>">
+    <small><%= event[:content][:sender_name] %></small>
+  </p>
+</header>
+<div class="card-body">
+  <p class="<% if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>sent<% else %>received<% end %>">
+    <%= event[:content][:content] %>
+  </p>
+</div>

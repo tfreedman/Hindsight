@@ -1,0 +1,6 @@
+<div class="card-body">
+  <a href="<%= event[:content][:html_url] %>">
+    <i class="fab fa-github"></i>
+  </a>
+  <%= event[:content][:commit]["author"]["name"] %> (<%= event[:content][:repo] %>) : <%= event[:content][:commit]["message"] %>
+</div>

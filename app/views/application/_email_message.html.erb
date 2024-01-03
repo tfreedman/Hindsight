@@ -1,0 +1,10 @@
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p class="<% if event[:content][:account] == event[:content][:from] %>sent<% else %>received<% end %>">
+    <small><%= event[:content][:from] %></small>
+  </p>
+</header>
+<div class="card-body">
+  <p class="<% if event[:content][:account] == event[:content][:from] %>sent<% else %>received<% end %>">
+    <%= event[:content][:subject] %>
+  </p>
+</div>

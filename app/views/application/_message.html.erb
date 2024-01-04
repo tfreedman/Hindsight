@@ -25,7 +25,12 @@
   <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
   <% author = event[:content][:real_sender] %>
   <% message = event[:content][:text] %>
+<% elsif event[:type].start_with?("mirc_log_", "lounge_log_", "xchat_log_") %>
+  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+  <% author = event[:content][:username] %>
+  <% message = event[:content][:line] %>
 <% end %>
+
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
   <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
     <small><%= author %></small>

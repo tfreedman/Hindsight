@@ -14,6 +14,17 @@
   <% kind = :sent if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>
   <% author = event[:content][:sender_name] %>
   <% message = event[:content][:content] %>
+<% elsif event[:type].start_with?('hangouts_event') %>
+  <% kind = :sent if event[:content][:real_name] == Hindsight::Application.credentials.real_name %>
+  <% author = event[:content][:real_name] %>
+<% elsif event[:type].start_with?('google_talk_message_') %>
+  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+  <% author = event[:content][:real_sender] %>
+  <% message = event[:content][:message] %>
+<% elsif event[:type].start_with?('google_chat_message_') %>
+  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+  <% author = event[:content][:real_sender] %>
+  <% message = event[:content][:text] %>
 <% end %>
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
   <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
@@ -22,6 +33,16 @@
 </header>
 <div class="card-body">
   <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
-    <%= message %>
+    <% if !event[:type].start_with?('hangouts_event') %>
+      <%= message %>
+    <% else %>
+      <% begin %>
+        <% event[:content][:chat_message]["message_content"]["segment"].each do |segment| %>
+          <%= segment["text"] %>
+        <% end %>
+      <% rescue %>
+        ???
+      <% end %>
+    <% end %>
   </p>
 </div>

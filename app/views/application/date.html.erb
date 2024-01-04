@@ -41,18 +41,16 @@
                 <% elsif event[:type] == "Fitbit" %>
                   <%= render 'application/fitbit', event: event %>
                 <% elsif event[:type] == "forum_post" %>
-                  <%= render 'application/forum_post', event: event %>          
+                  <%= render 'application/forum_post', event: event %>
                 <% elsif event[:type] == "github_commit" %>
                   <%= render 'application/github_commit', event: event %>
                 <% elsif event[:type] == "Photo Albums" %>
                   <%= render 'application/photo_album', event: event %>
                 <% elsif event[:type].start_with?("matrix_event") %>
                   <%= render 'application/matrix_event', post: event, color: colors2(@event_groups[event[:type]]) %>
-                <% elsif event[:type].start_with?("google_chat_message_", "google_talk_message_") %>
-                  <%= render 'application/google_chat_message', event: event %>
                 <% elsif event[:type].start_with?("mirc_log_", "lounge_log_", "xchat_log_") %>
                   <%= render 'application/irc_log', event: event %>
-                <% elsif event[:type].start_with?("skype_message_", "adium_message", "pidgin_message", "facebook_message") %>
+                <% elsif event[:type].start_with?("skype_message_", "adium_message", "pidgin_message", "facebook_message", "hangouts_event_", "google_chat_message_", "google_talk_message_") %>
                   <%= render 'application/message', event: event %>
                 <% elsif event[:type].start_with?("sociallink") %>
                   <% if event[:sub_type] == 'youtube_video' %>
@@ -76,8 +74,6 @@
                   <%= render 'application/android_call', event: event %>
                 <% elsif event[:type].start_with?("calendar_event") %>
                   <%= render 'application/calendar_event', event: event %>
-                <% elsif event[:type].start_with?("hangouts_event_") %>
-                  <%= render 'application/hangouts_event', event: event %>
                 <% elsif event[:type].start_with?('hindsight_file') %>
                   <%= render 'application/hindsight_file', event: event %>
                 <% elsif event[:type] == 'Photos' %>

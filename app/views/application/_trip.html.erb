@@ -1,0 +1,7 @@
+<div class="card-body">
+  <% if event[:type] == "presto_trip" %>
+    <%= event[:content][:location] %> - <%= event[:content][:kind] %>
+  <% elsif event[:type] == "bikeshare_trip" %>
+    <%= event[:content][:start_station] %> -> <%= event[:content][:end_station] %>
+  <% end %>
+</div>

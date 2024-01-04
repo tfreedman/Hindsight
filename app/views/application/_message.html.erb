@@ -10,15 +10,18 @@
   <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
   <% author = (event[:content][:real_sender] || event[:content][:sender]) %>
   <% message = event[:content][:message].html_safe %>
+<% elsif event[:type].start_with?('facebook_message') %>
+  <% kind = :sent if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>
+  <% author = event[:content][:sender_name] %>
+  <% message = event[:content][:content] %>
 <% end %>
-
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-  <p>
+  <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
     <small><%= author %></small>
   </p>
 </header>
 <div class="card-body">
-  <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+  <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
     <%= message %>
   </p>
 </div>

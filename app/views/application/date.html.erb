@@ -52,16 +52,12 @@
                   <%= render 'application/bikeshare_trip', event: event %>
                 <% elsif event[:type].start_with?("facebook_message") %>
                   <%= render 'application/facebook_message', event: event %>
-                <% elsif event[:type].start_with?("adium_message") %>
-                  <%= render 'application/adium_message', event: event %>
-                <% elsif event[:type].start_with?("pidgin_message") %>
-                  <%= render 'application/pidgin_message', event: event %>
                 <% elsif event[:type].start_with?("google_chat_message_", "google_talk_message_") %>
                   <%= render 'application/google_chat_message', event: event %>
                 <% elsif event[:type].start_with?("mirc_log_", "lounge_log_", "xchat_log_") %>
                   <%= render 'application/irc_log', event: event %>
-                <% elsif event[:type].start_with?("skype_message_") %>
-                  <%= render 'application/skype_message', event: event %>
+                <% elsif event[:type].start_with?("skype_message_", "adium_message", "pidgin_message") %>
+                  <%= render 'application/message', event: event %>
                 <% elsif event[:type].start_with?("sociallink") %>
                   <% if event[:sub_type] == 'youtube_video' %>
                     <%= render 'application/sociallink/youtube_video', event: event %>

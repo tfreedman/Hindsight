@@ -1,0 +1,24 @@
+<% if event[:type].start_with?('skype_message') %>
+  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+  <% author = event[:content][:author] %>
+  <% message = raw event[:content][:body_xml] %>
+<% elsif event[:type].start_with?('adium_message') %>
+  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+  <% author = event[:content][:real_sender] %>
+  <% message = event[:content][:message].html_safe %>
+<% elsif event[:type].start_with?('pidgin_message') %>
+  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+  <% author = (event[:content][:real_sender] || event[:content][:sender]) %>
+  <% message = event[:content][:message].html_safe %>
+<% end %>
+
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p>
+    <small><%= author %></small>
+  </p>
+</header>
+<div class="card-body">
+  <p class="<% if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>sent<% else %>received<% end %>">
+    <%= message %>
+  </p>
+</div>

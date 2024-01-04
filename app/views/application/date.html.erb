@@ -78,14 +78,10 @@
                   <% end %>
                 <% elsif event[:type].start_with?("email_message") %>
                   <%= render 'application/email_message', event: event %>
-                <% elsif event[:type].start_with?("windows_phone_sms_") %>
-                  <%= render 'application/windows_phone_sms', event: event %>
+                <% elsif event[:type].start_with?("windows_phone_sms_", "android_sms_", "voipms_sms_") %>
+                  <%= render 'application/sms', event: event %>
                 <% elsif event[:type] == "android_call" %>
                   <%= render 'application/android_call', event: event %>
-                <% elsif event[:type].start_with?("android_sms_") %>
-                  <%= render 'application/android_sms', event: event %>
-                <% elsif event[:type].start_with?("voipms_sms_") %>
-                  <%= render 'application/voipms_sms', event: event %>
                 <% elsif event[:type].start_with?("calendar_event") %>
                   <%= render 'application/calendar_event', event: event %>
                 <% elsif event[:type].start_with?("hangouts_event_") %>

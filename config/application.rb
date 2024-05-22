@@ -23,5 +23,6 @@ module Hindsight
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.beginning_of_week = :sunday
+    config.active_record.use_yaml_unsafe_load = true
   end
 end

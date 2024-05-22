@@ -3,7 +3,7 @@
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
   <p>
     <small>
-    <a href="https://www.pixiv.net/en/artworks/<%= event[:content][:post_id] %>"><%= snpc.name%> - <%= event[:content][:title] %></a>
+    <a href="https://www.pixiv.net/en/artworks/<%= event[:content][:post_id] %>"><i class="fa-brands fa-pixiv"></i> <%= snpc.name %> - <%= event[:content][:title] %></a>
       <% if event[:content][:filenames].count > 1 %>
         <% post_base = event[:content][:post_id] + '/' %>
         <span style="float: right">

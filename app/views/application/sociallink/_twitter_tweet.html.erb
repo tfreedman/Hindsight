@@ -4,6 +4,7 @@
   <p>
     <small>
         <a href="https://twitter.com/i/status/<%= event[:content][:tweet_id] %>"> 
+        <i class="fa-brands fa-twitter"></i>
         <%= ta.username %> <% if event[:content][:is_retweet] %>RT <% if event[:content][:retweet_data] %><%= event[:content][:retweet_data][:username] %><% else %>Unknown<% end %><% end %>
       </a>
     </small>

@@ -1,8 +1,12 @@
 <% json = JSON.parse(event[:content][:item]) %>
 <% snpc = ServiceNamePathCache.where(service: 'YouTube', username: event[:content][:channel_id]).first %>
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-  <p class="">
-    <small><%= snpc.name %> - <%= event[:content][:title] %></small>
+  <p>
+    <small>
+      <a href="https://www.youtube.com/watch?v=<%= event[:content][:video_id] %>">
+        <i class="fa-brands fa-youtube"></i> <%= snpc.name %> - <%= event[:content][:title] %>
+      </a>
+    </small>
   </p>
 </header>
 <div class="card-body">

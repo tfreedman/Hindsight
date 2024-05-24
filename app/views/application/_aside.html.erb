@@ -114,6 +114,25 @@
       <% end %>
     <% end %>
   <% end %>
+
+  <% if @ongoing_events.count > 0 %>
+    <h2>Ongoing:</h2>
+    <ul>
+    <% @ongoing_events.each do |o| %>
+        <% if !o.icon.blank? && o.icon.start_with?('fa') %>
+          <li class="details" style="border-top-color: <%= colors('ongoing') %>">
+            <div class="card-body">
+              <i class="fas <%= o.icon %>"></i> <%= o.name %>
+            </div>
+          </li>
+        <% else %>
+          <%= o.name %>
+        <% end %>
+    <% end %>
+    </ul>
+  <% else %>
+    <h2>No Ongoing Events :(</h2>
+  <% end %>
   
   <% if @event_groups.count > 0 %>
     <h2>Columns:</h2>

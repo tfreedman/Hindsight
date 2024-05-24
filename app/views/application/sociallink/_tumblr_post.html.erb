@@ -1,0 +1,61 @@
+<% snpc = ServiceNamePathCache.where(service: 'Tumblr', username: event[:content][:username]).first %>
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p>
+    <small>
+      <a href=""><i class="fa-brands fa-tumblr"></i> <%= snpc.name %> - <%= event[:content][:title] %></a>
+    </small>
+  </p>
+</header>
+<div class="card-body">
+  <% if event[:content][:post_type] == "post-content--text" %>
+    <%= raw(event[:content][:text]) %>
+  <% elsif event[:content][:post_type] == "post-content--video" %>
+    <% x = Nokogiri::HTML.parse(event[:content][:xml_dump]) %>
+    <% text = x.css('tumblr post').text %>
+    <% begin %>
+      <% url = "https://ve.media.tumblr.com/" + Nokogiri::HTML.parse(x.css('video-player')[0].text).css('source').attribute('src').text.split('/')[-2] + '_480.mp4' %>
+      <video controls preload="metadata">
+        <source src="<%= url %>" />
+       </video>
+    <% rescue %>
+       video
+    <% end %>
+  <% elsif event[:content][:post_type] == "post-content--audio" %>
+    <% x = Nokogiri::HTML.parse(event[:content][:xml_dump]) %>
+    <% text = x.css('tumblr post').text %>
+    <%= raw(text) %>
+    audio
+  <% elsif event[:content][:post_type] == "post-content--chat" %>
+    <%= raw(event[:content][:text]) %>
+    chat
+  <% elsif event[:content][:post_type] == "post-content--link" %>
+    <%= raw(event[:content][:text]) %>
+    link
+  <% elsif event[:content][:post_type] == "post-content--quote" %>
+    <%= raw(event[:content][:text]) %>
+    quote
+  <% elsif event[:content][:post_type] == "post-content--iframe" %>
+    <%= raw(event[:content][:text]) %>
+    iframe
+  <% elsif event[:content][:post_type] == "post-content--photo" %>
+    <% output = Nokogiri::XML.parse(event[:content][:xml_dump]) %>
+    <% if output.css('photo-caption').count > 0 %>
+       <%= raw(output.css('photo-caption')[0].text || '') %>
+    <% end %>
+    <% last_photo = nil %>
+    <% output.css('photo-url[max-width="1280"]').each do |photo| %>
+      <% if last_photo != photo.text.split('/')[-1] %>
+        <a data-fancybox="tumblr_<%= event[:content][:post_id] %>" href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}" %>/media/<%= snpc.name %>/Tumblr/<%= event[:content][:username] %>/<%= photo.text.split('/')[-1] %>">
+          <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}" %>/media/<%= snpc.name %>/Tumblr/<%= event[:content][:username] %>/<%= photo.text.split('/')[-1] %>" />
+        </a>
+        <% last_photo = photo.text.split('/')[-1] %>
+      <% end %>
+    <% end %>
+  <% elsif event[:content][:post_type] == "post-content--answer" %>
+    <% x = Nokogiri::HTML.parse(event[:content][:xml_dump]) %>
+    <% text = x.css('tumblr post').text %>
+    <%= raw(text) %>
+  <% else %>
+    <%= event %>
+  <% end %>
+</div>

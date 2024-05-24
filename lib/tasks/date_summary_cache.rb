@@ -175,7 +175,7 @@
           dates[event_date] += 1
         end
       elsif event_type == "MamircEvent"
-        MamircEvent.where.not(room: nil, enabled: false).find_each do |e|
+        MamircEvent.where.not(room: nil).where(enabled: true).find_each do |e|
           event_date = Time.at(e.timestamp / 1000).to_date.to_s
           dates[event_date] += 1
         end

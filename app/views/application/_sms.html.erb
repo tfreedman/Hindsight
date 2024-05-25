@@ -22,7 +22,7 @@
 </header>
 
 <div class="card-body">
-  <p>
+  <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
     <%= message %>
   </p>
 </div>

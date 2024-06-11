@@ -29,6 +29,10 @@
   <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
   <% author = event[:content][:username] %>
   <% message = event[:content][:line] %>
+<% elsif event[:type].start_with?('mamirc_event_') %>
+  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+  <% author = 'mamirc' %>
+  <% message = event[:content][:data].split('PRIVMSG ')[1].split(' :')[1] %>
 <% end %>
 
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">

@@ -8,6 +8,11 @@
   <% contact = event[:content][:contact_name] %>
   <% number = event[:content][:address] %>
   <% message = event[:content][:body] %>
+<% elsif event[:type].start_with?('android_mms') %>
+  <% kind = :sent if event[:content][:sms_type] == "2" %>
+  <% contact = event[:content][:contact_name] %>
+  <% number = event[:content][:address] %>
+  <% message = event[:content][:body] %>
 <% elsif event[:type].start_with?('windows_phone_sms') %>
   <% kind = :sent if event[:content]['is_sent'] %>
   <% contact = event[:content][:real_name] %>
@@ -23,6 +28,6 @@
 
 <div class="card-body">
   <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
-    <%= message %>
+    <%= raw message %>
   </p>
 </div>

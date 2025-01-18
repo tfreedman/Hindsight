@@ -29,6 +29,8 @@ module ApplicationHelper
       (HangoutsConversation.where(conversation_id: k.gsub('hangouts_event_', '')).first.participant_data.pluck('fallback_name') - [Hindsight::Application.credentials.real_name]).to_sentence
     elsif k.include?('android_sms_')
       k.gsub('android_sms_', '') + ' (SMS)'
+    elsif k.include?('android_mms_')
+      k.gsub('android_mms_', '') + ' (MMS)'
     elsif k.include?('windows_phone_sms_')
       k.gsub('windows_phone_sms_', '') + ' (SMS)'
     elsif k.include?('xchat_log_')

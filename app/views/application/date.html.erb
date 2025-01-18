@@ -70,7 +70,7 @@
                   <% end %>
                 <% elsif event[:type].start_with?("email_message") %>
                   <%= render 'application/email_message', event: event %>
-                <% elsif event[:type].start_with?("windows_phone_sms_", "android_sms_", "voipms_sms_") %>
+                <% elsif event[:type].start_with?("windows_phone_sms_", "android_sms_", "voipms_sms_", "android_mms_") %>
                   <%= render 'application/sms', event: event %>
                 <% elsif event[:type] == "android_call" %>
                   <%= render 'application/android_call', event: event %>

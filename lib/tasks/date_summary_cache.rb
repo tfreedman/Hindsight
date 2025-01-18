@@ -7,6 +7,7 @@
 
     event_types = [
       'AdiumMessage',
+      'AndroidMms',
       'AndroidSms',
       'BikeshareTrip',
       'CalendarEvent',
@@ -49,6 +50,11 @@
       if event_type == 'AdiumMessage'
         AdiumMessage.where.not(enabled: false).find_each do |e|
           event_date = Time.at(e.timestamp).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'AndroidMms'
+        AndroidMms.find_each do |e|
+          event_date = Time.at(e.date / 1000).to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == 'AndroidSms'
@@ -114,7 +120,7 @@
         end
       elsif event_type == "FitbitMeasurement"
         FitbitMeasurement.find_each do |e|
-          event_date = Time.at(e.logId).to_date.to_s
+          event_date = Time.at(e.log_id).to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == "ForumPost"

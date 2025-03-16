@@ -1,4 +1,10 @@
-<% json = JSON.parse(post[:content][:content]) %>
+<% if post[:content][:event_type] == "m.room.encrypted" %>
+  <% json = JSON.parse(post[:content][:plaintext]) %>
+<% else %>
+  <% json = JSON.parse(post[:content][:content]) %>
+<% end %>
+
+
 <% if json["msgtype"] == 'm.text' %>
   <header style="color: <%= color %>">
     <p class="<% if post[:content][:sender] == Hindsight::Application.credentials.mxid %>sent<% else %>received<% end %>">

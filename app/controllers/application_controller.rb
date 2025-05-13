@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
       @date = Date.new(Time.now.year, 01, 01)
     end
     @types = DateSummary.pluck(:event_type).uniq.sort
-    summaries = DateSummary.where(:date => @date..(@date + 1.year)).all
+    summaries = DateSummary.where(:date => @date..(@date + 1.year - 1.day)).all
 
     @totals = Hash.new { |hash, key| hash[key] = 0 }
     @events = Hash.new
@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def date
+  def date    
     @date = Date.parse("#{params[:yyyy]}-#{params[:mm]}-#{params[:dd]}")
     if params[:start_date].nil?
       params[:start_date] = "#{params[:yyyy]}-#{params[:mm]}-#{params[:dd]}"
@@ -89,26 +89,33 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: call.date / 1000, type: 'android_call', content: call}
     end
 
-    if false
+    hindsight_files = HindsightFile.where(:created_at => @date.beginning_of_day..@date.end_of_day).all
+    hindsight_files += HindsightFile.where(:modified_at => @date.beginning_of_day..@date.end_of_day).all
+
+    hindsight_files.uniq.each do |file|
+      @events << {sort_time: file.created_at.to_i, type: 'hindsight_file', content: file, kind: 'created'}
+      @events << {sort_time: file.modified_at.to_i, type: 'hindsight_file', content: file, kind: 'last modified'}
+    end
 
     photos = Photo.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     photos.each do |photo|
-      logger.info photo.id
-      next if photo.is_sidecar?
-      next if photo.lightroom_rating == 1.0
-
-      phototags = photo.lightroom_phototags.collect{ |name| 
-        snpc = ServiceNamePathCache.where(name: name).first
-        if snpc && Hindsight::Application.credentials.sociallink_integration
-          "<a href=\"https://#{Hindsight::Application.credentials.sociallink_url}/profiles/#{snpc.uid}\">#{name}</a>"
-        else
-          name
-        end
-      }.to_sentence
-      @events << {sort_time: photo.timestamp, type: 'Photos', content: photo, caption: phototags}
+      begin
+        next if photo.is_sidecar?
+        next if photo.lightroom_rating == 1.0
+  
+        phototags = photo.lightroom_phototags.collect{ |name| 
+          snpc = ServiceNamePathCache.where(name: name).first
+          if snpc && Hindsight::Application.credentials.sociallink_integration
+            "<a href=\"https://#{Hindsight::Application.credentials.sociallink_url}/profiles/#{snpc.uid}\">#{name}</a>"
+          else
+            name
+          end
+        }.to_sentence
+        @events << {sort_time: photo.timestamp, type: 'Photos', content: photo, caption: phototags}
+      rescue
+        logger.info photo.id
+      end
     end
-    end
-
 
     windows_phone_sms = WindowsPhoneSms.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     windows_phone_sms.each do |sms|
@@ -118,6 +125,16 @@ class ApplicationController < ActionController::Base
     android_sms = AndroidSms.where(:date => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).all
     android_sms.each do |sms|
       @events << {sort_time: sms.date / 1000, type: 'android_sms_' + (sms.contact_name || '(Unknown)'), content: sms}
+    end
+
+    android_mms = AndroidMms.where(:date => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).where(enabled: true).all
+    android_mms.each do |mms|
+      @events << {sort_time: mms.date / 1000, type: 'android_mms_' + (mms.contact_name || '(Unknown)'), content: mms}
+    end
+
+    voipms_sms = VoipmsSms.where(:date => (@date.beginning_of_day)..(@date.end_of_day)).where(enabled: true).all
+    voipms_sms.each do |sms|
+      @events << {sort_time: sms.date.to_i, type: 'voipms_sms_' + (sms.contact || '(Unknown)'), content: sms}
     end
 
     lounge_logs = LoungeLog.where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day), enabled: true).all
@@ -132,7 +149,12 @@ class ApplicationController < ActionController::Base
 
     pidgin_messages = PidginMessage.where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day), enabled: true).all
     pidgin_messages.each do |message|
-      @events << {sort_time: message.timestamp.to_i, type: 'pidgin_message_' + ([message.real_sender, message.real_receiver] - [Hindsight::Application.credentials.real_name]).sort[0].to_s, content: message}
+      if message.real_receiver && message.real_sender
+        sender = ([message.real_sender, message.real_receiver] - [Hindsight::Application.credentials.real_name]).sort[0].to_s
+      else
+        sender = message.receiver
+      end
+      @events << {sort_time: message.timestamp.to_i, type: 'pidgin_message_' + sender, content: message}
     end
 
     email_messages = EmailMessage.where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day)).all
@@ -176,6 +198,11 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: (message.timestamp / 1000).to_i, content: message, type: 'facebook_message_' + message.room.title}
     end
 
+    google_chat_messages = GoogleChatMessage.where(enabled: true).where(:created_date => (@date.beginning_of_day)..(@date.end_of_day)).all
+    google_chat_messages.each do |g|
+      @events << {sort_time: g.created_date, content: g, type: 'google_chat_message_' + g.room}
+    end
+
     google_talk_messages = GoogleTalkMessage.where(enabled: true).where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day)).all
     google_talk_messages.each do |g|
       @events << {sort_time: g.timestamp.to_i, content: g, type: 'google_talk_message_' + g.room}
@@ -196,7 +223,7 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: message.timestamp.to_i, content: message, type: 'mirc_log_' + message.room}
     end
 
-    matrix_events = MatrixEvent.where(:origin_server_ts => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).all
+    matrix_events = MatrixEvent.where(:origin_server_ts => ((@date.beginning_of_day.to_i - 600) * 1000)..((@date.end_of_day.to_i + 600) * 1000)).all
 
     # Only allow bridged facebook events that are newer than the last Facebook data download
     last_facebook_message_timestamp = FacebookMessage.order(timestamp: :desc).first.timestamp
@@ -205,7 +232,13 @@ class ApplicationController < ActionController::Base
       type = 'matrix_event_' + event.room_id
       result = filter_events(event, type, {last_facebook_message_timestamp: last_facebook_message_timestamp})
       if result
-        @events << {sort_time: result.origin_server_ts / 1000, type: type, content: result}
+        offset = 0
+        
+        timestamp = (result.origin_server_ts / 1000) + offset
+
+        if @date.beginning_of_day.to_i <= timestamp && @date.end_of_day.to_i >= timestamp
+          @events << {sort_time: timestamp, type: type, content: result}
+        end
       end
     end
 
@@ -219,9 +252,14 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: message.timestamp, type: 'skype_message_' + message.room_name, content: message}
     end
 
-    fitbit_measurements = FitbitMeasurement.where(:logId => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
+    fitbit_measurements = FitbitMeasurement.where(:log_id => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     fitbit_measurements.each do |f|
-      @events << {sort_time: f.logId, type: 'Fitbit', content: f}
+      @events << {sort_time: f.log_id, type: 'Fitbit', content: f}
+    end
+
+    forum_posts = ForumPost.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
+    forum_posts.each do |f|
+      @events << {sort_time: f.timestamp, type: 'forum_post', content: f}
     end
 
     github_commits = GitHubCommit.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
@@ -245,10 +283,20 @@ class ApplicationController < ActionController::Base
         @events << {sort_time: p.created_at.to_i, type: 'sociallink', sub_type: 'pixiv_post', content: p}
       end
 
-      webcomic_strips = Webcomic.where(date: @date).all
-      webcomic_strips.each do |w|
-        @events << {sort_time: w.date.beginning_of_day.to_i, type: 'sociallink', sub_type: 'webcomic_strip', content: w}
+      tumblr_posts = TumblrPost.where(timestamp: @date.beginning_of_day..@date.end_of_day).all
+      tumblr_posts.each do |t|
+        @events << {sort_time: t.timestamp.to_i, type: 'sociallink', sub_type: 'tumblr_post', content: t}
       end
+
+      facebook_posts = FBID.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
+      facebook_posts.each do |f|
+        @events << {sort_time: f.timestamp, type: 'sociallink', sub_type: 'facebook_post', content: f}
+      end
+
+      #webcomic_strips = Webcomic.where(date: @date).all
+      #webcomic_strips.each do |w|
+      #  @events << {sort_time: w.date.beginning_of_day.to_i, type: 'sociallink', sub_type: 'webcomic_strip', content: w}
+      #end
 
       instagram_posts = InstagramPost.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
       instagram_posts.each do |i|
@@ -267,6 +315,18 @@ class ApplicationController < ActionController::Base
     financial_transactions.each do |f|
       @on_this_day[:financial_transactions] = [] if @on_this_day[:financial_transactions].nil?
       @on_this_day[:financial_transactions] << {type: 'financial_transaction', content: f}
+    end
+
+    @ongoing_events = OngoingEvent.where('start_date <= ? AND end_date >= ?', @date, @date).all
+
+    N3dsActivityEvent.where(date: @date).find_each do |n|
+      @on_this_day[:nintendo_3ds_activity_event] = [] if @on_this_day[:nintendo_3ds_activity_event].nil?
+      @on_this_day[:nintendo_3ds_activity_event] << {type: 'nintendo_3ds_activity_event', content: n}
+    end
+
+    WiiPlaytime.where(date: @date).find_each do |n|
+      @on_this_day[:wii_playtime] = [] if @on_this_day[:wii_playtime].nil?
+      @on_this_day[:wii_playtime] << {type: 'wii_playtime', content: n}
     end
 
     magazines = []
@@ -329,7 +389,9 @@ class ApplicationController < ActionController::Base
         event[:height] = (event[:end_time] - event[:sort_time]) - event[:top]
       end
 
-      @hours[Time.at(event[:sort_time]).beginning_of_hour.to_i] << event
+      if @hours[Time.at(event[:sort_time]).beginning_of_hour.to_i]
+        @hours[Time.at(event[:sort_time]).beginning_of_hour.to_i] << event
+      end
     end
 
     # Group events into columns
@@ -433,5 +495,8 @@ class ApplicationController < ActionController::Base
     else
       ':('
     end
+  end
+
+  def todo
   end
 end

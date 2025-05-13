@@ -226,14 +226,19 @@ class ApplicationController < ActionController::Base
     matrix_events = MatrixEvent.where(:origin_server_ts => ((@date.beginning_of_day.to_i - 600) * 1000)..((@date.end_of_day.to_i + 600) * 1000)).all
 
     # Only allow bridged facebook events that are newer than the last Facebook data download
-    last_facebook_message_timestamp = FacebookMessage.order(timestamp: :desc).first.timestamp
+    fm = FacebookMessage.order(timestamp: :desc).first
+    if fm
+      last_facebook_message_timestamp = fm.timestamp
+    else
+      last_facebook_message_timestamp = 0
+    end
 
     matrix_events.each do |event|
       type = 'matrix_event_' + event.room_id
       result = filter_events(event, type, {last_facebook_message_timestamp: last_facebook_message_timestamp})
       if result
         offset = 0
-        
+
         timestamp = (result.origin_server_ts / 1000) + offset
 
         if @date.beginning_of_day.to_i <= timestamp && @date.end_of_day.to_i >= timestamp

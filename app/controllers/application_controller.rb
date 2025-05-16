@@ -335,12 +335,14 @@ class ApplicationController < ActionController::Base
     end
 
     magazines = []
-    Dir.foreach(Hindsight::Application.credentials.magazines_path) do |magazine|
-      next if magazine == '.' or magazine == '..' or !File.directory?(Hindsight::Application.credentials.magazines_path)
-      Dir.foreach(Hindsight::Application.credentials.magazines_path + magazine) do |issue|
-        next if issue == '.' or issue == '..' or issue == '.DS_Store'
-        if issue.start_with? @date.strftime("%Y-%m ")
-          magazines << {name: issue.split(@date.strftime("%Y-%m "))[1].split('.')[0], url: "https://#{Hindsight::Application.credentials.development_hosts[0]}/magazines/#{magazine}/#{issue}"}
+    if !Hindsight::Application.credentials.magazines_path.blank?
+      Dir.foreach(Hindsight::Application.credentials.magazines_path) do |magazine|
+        next if magazine == '.' or magazine == '..' or !File.directory?(Hindsight::Application.credentials.magazines_path)
+        Dir.foreach(Hindsight::Application.credentials.magazines_path + magazine) do |issue|
+          next if issue == '.' or issue == '..' or issue == '.DS_Store'
+          if issue.start_with? @date.strftime("%Y-%m ")
+            magazines << {name: issue.split(@date.strftime("%Y-%m "))[1].split('.')[0], url: "https://#{Hindsight::Application.credentials.development_hosts[0]}/magazines/#{magazine}/#{issue}"}
+          end
         end
       end
     end

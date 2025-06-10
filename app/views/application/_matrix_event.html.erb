@@ -1,11 +1,13 @@
 <% if post[:content][:event_type] == "m.room.encrypted" %>
-  <% json = JSON.parse(post[:content][:plaintext]) %>
+  <% if post[:content][:plaintext] %>
+    <% json = JSON.parse(post[:content][:plaintext]) %>
+  <% end %>
 <% else %>
   <% json = JSON.parse(post[:content][:content]) %>
 <% end %>
 
 
-<% if json["msgtype"] == 'm.text' %>
+<% if json && json["msgtype"] == 'm.text' %>
   <header style="color: <%= color %>">
     <p class="<% if post[:content][:sender] == Hindsight::Application.credentials.mxid %>sent<% else %>received<% end %>">
       <small class="sender"><%= post[:content][:sender] %>: </small>
@@ -14,7 +16,7 @@
   <div class="card-body <% if post[:content][:sender] == Hindsight::Application.credentials.mxid %>sent<% else %>received<% end %>">
     <%= sanitize json["body"].gsub(/\R+/, '<br />').gsub(/\t/, '&nbsp;&nbsp;&nbsp;&nbsp;'), tags: %w(strong em a code pre h2 h3 p blockquote ul ol li br), attributes: %w(href class) %>
   </div>
-<% elsif json["msgtype"] == 'm.image' %>
+<% elsif json && json["msgtype"] == 'm.image' %>
   <header style="color: <%= color %>">
     <p class="<% if post[:content][:sender] == Hindsight::Application.credentials.mxid %>sent<% else %>received<% end %>">
       <small class="sender"><%= post[:content][:sender] %>: </small>
@@ -22,18 +24,18 @@
   </header>
   <div class="card-body">
     <p class="neutral">
-      <a data-fancybox href="https://<%= Hindsight::Application.credentials.mxid.split(':')[1] %>/_matrix/media/r0/download/<%= json['url'].split('mxc://')[1] %>"><img src="https://<%= Hindsight::Application.credentials.mxid.split(':')[1] %>/_matrix/media/r0/download/<%= json['url'].split('mxc://')[1] %>" /></a>
+      <a data-fancybox href="<%= Hindsight::Application.credentials.matrix_media_server %>/v1/media/download/<%= post[:content].get_media_token %>"><img src="<%= Hindsight::Application.credentials.matrix_media_server %>/v1/media/download/<%= post[:content].get_media_token %>" /></a>
       <small><%= json["body"] %></small>
     </p>
   </div>
-<% elsif json["msgtype"] == 'm.video' %>
-  <a data-fancybox href="https://<%= Hindsight::Application.credentials.mxid.split(':')[1] %>/_matrix/media/r0/download/<%= json['url'].split('mxc://')[1] %>">
+<% elsif json && json["msgtype"] == 'm.video' %>
+  <a data-fancybox href="<%= Hindsight::Application.credentials.matrix_media_server %>/v1/media/download/<%= post[:content].get_media_token %>">
     <video controls preload="metadata">
-      <source src="https://<%= Hindsight::Application.credentials.mxid.split(':')[1] %>/_matrix/media/r0/download/<%= json['url'].split('mxc://')[1] %>" />
+      <source src="<%= Hindsight::Application.credentials.matrix_media_server %>/v1/media/download/<%= post[:content].get_media_token %>" />
     </video>
   </a>
-  <p style="text-align: center"><em>(<a href="https://<%= Hindsight::Application.credentials.mxid.split(':')[1] %>/_matrix/media/r0/download/<%= json['url'].split('mxc://')[1] %>"><%= json["body"] %></a>)</em></p>
-<% elsif json["msgtype"] == 'm.emote' %>
+  <p style="text-align: center"><em>(<a href="<%= Hindsight::Application.credentials.matrix_media_server %>/v1/media/download/<%= post[:content].get_media_token %>"><%= json["body"] %></a>)</em></p>
+<% elsif json && json["msgtype"] == 'm.emote' %>
   <header style="color: <%= color %>">
     <p class="<% if post[:content][:sender] == Hindsight::Application.credentials.mxid %>sent<% else %>received<% end %>">
       <small class="sender"><%= post[:content][:sender] %>: </small>
@@ -42,7 +44,7 @@
   <div class="card-body">
     /me <%= json["body"] %>
   </div>
-<% elsif json["membership"] %>
+<% elsif json && json["membership"] %>
   <div class="card-body">
     <% if json["membership"] == 'leave' %>
       <p class="neutral">

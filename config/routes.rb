@@ -8,5 +8,9 @@ Rails.application.routes.draw do
 
   get '/auth/:key' => 'application#auth'
 
+  # Some things require manual recurring imports - you can create a TODO page yourself showing the last
+  # time each of those things was last imported. Since this varies per-user, it shouldn't be part of git.
+  get '/todo' => 'application#todo'
+
  root 'application#overview'
 end

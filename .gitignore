@@ -50,3 +50,6 @@ yarn-debug.log*
 
 # User filters
 /app/helpers/user_filters.rb
+
+# Progress page
+/app/views/application/todo.html.erb

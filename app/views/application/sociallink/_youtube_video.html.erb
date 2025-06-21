@@ -1,23 +1,8 @@
-<% json = JSON.parse(event[:content][:item]) %>
-<% snpc = ServiceNamePathCache.where(service: 'YouTube', username: event[:content][:channel_id]).first %>
-<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-  <p>
-    <small>
-      <a href="https://www.youtube.com/watch?v=<%= event[:content][:video_id] %>">
-        <i class="fa-brands fa-youtube"></i> <%= snpc.name %> - <%= event[:content][:title] %>
-      </a>
-    </small>
-  </p>
-</header>
-<div class="card-body">
-  <p>
-    <%
-      if json['snippet']['thumbnails']['maxres']
-        url = json['snippet']['thumbnails']['maxres']['url']
-      elsif json['snippet']['thumbnails']['high']
-        url = json['snippet']['thumbnails']['high']['url']
-      end
-    %>
-    <a data-fancybox href="https://www.youtube.com/watch?v=<%= event[:content][:video_id] %>"><img src="<%= url %>" /></a>
-  </p>
-</div>
+<%
+  if json['snippet']['thumbnails']['maxres']
+    url = json['snippet']['thumbnails']['maxres']['url']
+  elsif json['snippet']['thumbnails']['high']
+    url = json['snippet']['thumbnails']['high']['url']
+  end
+%>
+<a data-fancybox href="https://www.youtube.com/watch?v=<%= event[:content][:video_id] %>"><img src="<%= url %>" /></a>

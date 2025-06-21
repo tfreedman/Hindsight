@@ -1,15 +1,3 @@
-<% ta = TwitterAccount.where(user_id: event[:content][:user_id]).first %>
-<% snpc = ServiceNamePathCache.where(service: 'Twitter', username: ta.username).first %>
-<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-  <p>
-    <small>
-        <a href="https://twitter.com/i/status/<%= event[:content][:tweet_id] %>"> 
-        <i class="fa-brands fa-twitter"></i>
-        <%= ta.username %> <% if event[:content][:is_retweet] %>RT <% if event[:content][:retweet_data] %><%= event[:content][:retweet_data][:username] %><% else %>Unknown<% end %><% end %>
-      </a>
-    </small>
-  </p>
-</header>
 <div class="card-body">
   <p>
     <% tweet = event[:content].text %>

@@ -1,16 +1,3 @@
-<% snpc = ServiceNamePathCache.where(service: 'Webcomic', username: event[:content][:comic]).first %>
-<% json = JSON.parse(event[:content][:payload]) %>
-<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-  <p class="">
-    <small><%= snpc.name %>
-      <% if json && json["url"] && json["title"] %>
-        - <a href="<%= json['url'] %>"><em><%= json["title"] %></em></a>
-      <% elsif json && json["title"] %>
-        - <em><%= json["title"] %></em>
-      <% end %>
-    </small>
-  </p>
-</header>
 <div class="card-body">
   <p>
     <% if event[:content][:filename] %>

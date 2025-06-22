@@ -3,6 +3,9 @@ class ApplicationController < ActionController::Base
 
   include UserFilters
 
+  # This variable exists so SocialLink's ERB files can be loaded straight into Hindsight
+  SOCIALLINK_BASE_MEDIA_URL = "https://#{Hindsight::Application.credentials.sociallink_url}"
+
   def auth
     if params[:key] == Hindsight::Application.credentials.auth_token
       #session[:key] = "hello!"
@@ -298,10 +301,10 @@ class ApplicationController < ActionController::Base
         @events << {sort_time: f.timestamp, type: 'sociallink', sub_type: 'facebook_post', content: f}
       end
 
-      #webcomic_strips = Webcomic.where(date: @date).all
-      #webcomic_strips.each do |w|
-      #  @events << {sort_time: w.date.beginning_of_day.to_i, type: 'sociallink', sub_type: 'webcomic_strip', content: w}
-      #end
+      webcomic_strips = Webcomic.where(date: @date).all
+      webcomic_strips.each do |w|
+        @events << {sort_time: w.date.beginning_of_day.to_i, type: 'sociallink', sub_type: 'webcomic_strip', content: w}
+      end
 
       instagram_posts = InstagramPost.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
       instagram_posts.each do |i|

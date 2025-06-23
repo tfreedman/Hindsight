@@ -143,4 +143,22 @@
       <%= render 'application/sociallink/twitter_tweet', event: event, ta: ta, snpc: snpc %>
     </p>
   </div>
+<% elsif event[:sub_type] == "mastodon_toot" %>
+  <% ma = MastodonAccount.where(user_id: event[:content][:user_id]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Mastodon', username: ma.username).first %> 
+  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+    <p>
+      <small>
+        <a href="<%= event[:content][:url] %>">
+          <i class="fa-brands fa-mastodon"></i>
+          <%= event[:content][:account]["username"] %> 
+        </a>
+      </small>
+    </p>
+  </header>
+  <div class="card-body">
+    <p>
+      <%= render 'application/sociallink/mastodon_toot', post: event, snpc: snpc %>
+    </p>
+  </div>
 <% end %>

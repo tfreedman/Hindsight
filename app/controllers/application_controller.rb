@@ -316,6 +316,12 @@ class ApplicationController < ActionController::Base
       twitter_tweets.each do |t|
         @events << {sort_time: t.time.to_i, type: 'sociallink', sub_type: 'twitter_tweet', content: t}
       end
+
+      mastodon_accounts = MastodonAccount.pluck(:user_id)
+      mastodon_toots = MastodonToot.where(user_id: mastodon_accounts, created_at: @date.beginning_of_day..@date.end_of_day).order('created_at DESC').all
+      mastodon_toots.each do |m|
+        @events << {sort_time: m.created_at.to_i, type: 'sociallink', sub_type: 'mastodon_toot', content: m}
+      end
     end
 
     @on_this_day = {}

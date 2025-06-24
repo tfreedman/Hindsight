@@ -322,6 +322,12 @@ class ApplicationController < ActionController::Base
       mastodon_toots.each do |m|
         @events << {sort_time: m.created_at.to_i, type: 'sociallink', sub_type: 'mastodon_toot', content: m}
       end
+
+      bluesky_accounts = BlueskyAccount.pluck(:did)
+      bluesky_posts = BlueskyPost.where(user_did: bluesky_accounts, sort_at: @date.beginning_of_day..@date.end_of_day).order('sort_at DESC').all
+      bluesky_posts.each do |b|
+        @events << {sort_time: b.sort_at.to_i, type: 'sociallink', sub_type: 'bluesky_post', content: b}
+      end
     end
 
     @on_this_day = {}

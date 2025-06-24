@@ -161,4 +161,22 @@
       <%= render 'application/sociallink/mastodon_toot', post: event, snpc: snpc %>
     </p>
   </div>
+<% elsif event[:sub_type] == "bluesky_post" %>
+  <% ba = BlueskyAccount.where(did: event[:content][:user_did]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Bluesky', username: ba.username).first %>
+  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+    <p>
+      <small>
+        <a href="https://bsky.app/profile/<%= event[:content][:uri].split('at://')[1].split('/')[0] %>/post/<%= event[:content][:uri].split('/')[-1] %>">
+          <i class="fa-brands fa-bluesky"></i>
+          <%= event[:content][:post]["author"]["displayName"] %>
+        </a>
+      </small>
+    </p>
+  </header>
+  <div class="card-body">
+    <p>
+      <%= render 'application/sociallink/bluesky_post', post: event, snpc: snpc, record: nil %>
+    </p>
+  </div>
 <% end %>

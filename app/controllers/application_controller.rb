@@ -306,6 +306,11 @@ class ApplicationController < ActionController::Base
         @events << {sort_time: w.date.beginning_of_day.to_i, type: 'sociallink', sub_type: 'webcomic_strip', content: w}
       end
 
+      instagram_stories = InstagramStory.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
+      instagram_stories.each do |i|
+        @events << {sort_time: i.timestamp, type: 'sociallink', sub_type: 'instagram_story', content: i}
+      end
+
       instagram_posts = InstagramPost.where(timestamp: @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
       instagram_posts.each do |i|
         @events << {sort_time: i.timestamp, type: 'sociallink', sub_type: 'instagram_post', content: i}

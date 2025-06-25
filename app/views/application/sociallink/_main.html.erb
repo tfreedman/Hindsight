@@ -113,6 +113,21 @@
       <%= render 'application/sociallink/instagram_post', event: event, json: json, snpc: snpc %>
     </p>
   </div>
+<% elsif event[:sub_type] == "instagram_story" %>
+  <% ig = InstagramAccount.where(instagram_id: event[:content][:instagram_user_id]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Instagram', username: "#{ig.username} (#{ig.instagram_id})").first %>
+  <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+    <p>
+      <small>
+        <i class="fa-brands fa-instagram"></i> <i class="far fa-clock"></i> <%= snpc.name %>
+      </small>
+    </p>
+  </header>
+  <div class="card-body">
+    <p class="neutral">
+      <%= render 'application/sociallink/instagram_story', post: event, snpc: snpc %>
+    </p>
+  </div>
 <% elsif event[:sub_type] == "tumblr_post" %>
   <% snpc = ServiceNamePathCache.where(service: 'Tumblr', username: event[:content][:username]).first %>
   <header style="color: <%= colors2(@event_groups[event[:type]]) %>">

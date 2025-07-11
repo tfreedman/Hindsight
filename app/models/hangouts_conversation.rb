@@ -1,4 +1,5 @@
 class HangoutsConversation < ActiveRecord::Base
+  establish_connection :hindsight
   serialize :conversation_type
   serialize :self_conversation_state
   serialize :read_state
@@ -9,6 +10,4 @@ class HangoutsConversation < ActiveRecord::Base
   serialize :network_type
   serialize :force_history_state
   serialize :group_link_sharing_status
-
-  establish_connection :hindsight
 end

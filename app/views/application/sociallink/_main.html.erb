@@ -149,7 +149,7 @@
   <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
     <p>
       <small>
-          <a href="https://twitter.com/i/status/<%= event[:content][:tweet_id] %>">
+        <a href="https://twitter.com/i/status/<%= event[:content][:tweet_id] %>">
           <i class="fa-brands fa-twitter"></i>
           <%= ta.username %> <% if event[:content][:is_retweet] %>RT <% if event[:content][:retweet_data] %><%= event[:content][:retweet_data][:username] %><% else %>Unknown<% end %><% end %>
         </a>
@@ -158,7 +158,7 @@
   </header>
   <div class="card-body">
     <p>
-      <%= render 'application/sociallink/twitter_tweet', event: event, ta: ta, snpc: snpc %>
+      <%= render 'application/sociallink/twitter_tweet', post: event, ta: ta, snpc: snpc %>
     </p>
   </div>
 <% elsif event[:sub_type] == "mastodon_toot" %>

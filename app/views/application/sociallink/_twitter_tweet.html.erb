@@ -1,49 +1,99 @@
-<div class="card-body">
-  <p>
-    <% tweet = event[:content].text %>
-    <% tweet = tweet.gsub(/pic\.twitter\.com\/[a-zA-Z0-9]*/, '') %>
-    <% tweet = tweet.gsub(/(https:\/\/t.co\/).*/).with_index { |_, i|
-      "<a href=\"#{event[:content].entries[:urls][i]}\">#{event[:content].entries[:urls][i]}</a>"
+<% tweets = [] %>
+<% tweets << post[:content] %>
+<% base_ta = TwitterAccount.where(user_id: tweets[0][:user_id]).first %>
+
+<% if defined?(snpc) # Used by Hindsight %>
+  <% media_path = ApplicationController::SOCIALLINK_BASE_MEDIA_URL + "/media/#{snpc.name}/Twitter/#{snpc.username}/" %>
+<% else # Used by SocialLink %>
+  <% media_path = ApplicationController::SOCIALLINK_BASE_MEDIA_URL + "/media/#{person[:name]}/Twitter/#{base_ta.username}/" %>
+<% end %>
+
+<% continue = true %>
+<% while continue %>
+  <% if tweets[-1].reply_data %>
+    <% reply_tweet_id = tweets[-1].reply_data[:permalink].split('/')[-1] %>
+    <% in_reply_to = TwitterTweet.where(tweet_id: reply_tweet_id).first %>
+    <% if in_reply_to %>
+      <% tweets << in_reply_to %>
+      <% next %>
+    <% end %>
+  <% end %>
+  <% continue = false %>
+<% end %>
+<% tweets.reverse! %>
+
+<% tweets.each do |tweet| %>
+  <div class="tweet">
+    <% if tweet[:is_retweet] %><h2><a href="https://twitter.com/i/status/<%= tweet[:tweet_id] %>"> RT <% if tweet[:retweet_data] %><%= tweet[:retweet_data][:username] %><% else %>Unknown<% end %></a></h2><% end %>
+    <% text = tweet.text %>
+    <% text = text.gsub(/pic\.twitter\.com\/[a-zA-Z0-9]*/, '') %>
+    <% text = text.gsub(/(https:\/\/t.co\/).*/).with_index { |_, i|
+      "<a href=\"#{tweet.entries[:urls][i]}\">#{tweet.entries[:urls][i]}</a>"
       }
     %>
-    <% tweet = tweet.gsub("\n", '<br />') %>
-    <%= raw(tweet) %>
-
-    <% if event[:content]['is_quoting'] && event[:content].quoting_data %>
+    <% text = text.gsub("\n", '<br />') %>
+    <%= raw(text) %>
+  
+    <% if tweet['is_quoting'] && tweet.quoting_data %>
       <br /><br />
-      <strong><a href="https://twitter.com<%= event[:content].quoting_data[:permalink] %>"><%= event[:content].quoting_data[:username] %>:</a></strong>
+      <strong><a href="https://twitter.com<%= tweet.quoting_data[:permalink] %>"><%= tweet.quoting_data[:username] %>:</a></strong>
       <div style="padding-left: 20px">
-        <% if event[:content].quoting && event[:content].quoting.text %>
-          <% tweet = event[:content].quoting.text %>
+        <% if tweet.quoting && tweet.quoting.text %>
+        <% text = tweet.quoting.text %>
         <% else %>
-          <% tweet = '' %>
+          <% text = '' %>
         <% end %>
-        <% tweet = tweet.gsub(/pic\.twitter\.com\/[a-zA-Z0-9]*/, '') %>
-        <% tweet = tweet.gsub(/(https:\/\/t.co\/).*/).with_index { |_, i|
-          "<a href=\"#{event[:content].quoting.entries[:urls][i]}\">#{event[:content].quoting.entries[:urls][i]}</a>"
+        <% text = text.gsub(/pic\.twitter\.com\/[a-zA-Z0-9]*/, '') %>
+        <% text = text.gsub(/(https:\/\/t.co\/).*/).with_index { |_, i|
+          "<a href=\"#{tweet.quoting.entries[:urls][i]}\">#{tweet.quoting.entries[:urls][i]}</a>"
           }
         %>
-        <% tweet = tweet.gsub("\n", '<br />') %>
-        <%= raw(tweet) %>
+        <% text = text.gsub("\n", '<br />') %>
+        <%= raw(text) %>
       </div>
     <% end %>
 
-    <% if event[:content][:is_retweet] && event[:content].original %>
-      <% photos = event[:content].original[:entries][:photos] %>
+    <% if tweet[:is_retweet] && tweet.original %>
+      <% photos = tweet.original[:entries][:photos] %>
+      <% videos = tweet.original[:entries][:videos] %>
     <% else %>
-      <% photos = event[:content][:entries][:photos] %>
+      <% photos = tweet[:entries][:photos] %>
+      <% videos = tweet[:entries][:videos] %>
     <% end %>
-    <% photos.each do |photo| %>
-      <% if photo.class == Hash && photo['URL'] %>
-        <a href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo['URL'].split('/')[-1].split('.')[0]}-orig.#{photo['URL'].split('/')[-1].split('.')[1]}" %>" data-fancybox="twitter_<%= event[:content][:tweet_id] %>">
-          <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo['URL'].split('/')[-1].split('.')[0]}-orig.#{photo['URL'].split('/')[-1].split('.')[1]}" %>" />
-        </a>
-      <% elsif photo.class == String %>
-        <a href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>"
-  data-fancybox="twitter_<%= event[:content][:tweet_id] %>">
-          <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}/media/#{snpc.name}/#{snpc.service}/#{snpc.username}/#{photo.split('/')[-1].split('.')[0]}-orig.#{photo.split('/')[-1].split('.')[1]}" %>" />
-        </a>
+
+    <% photos = [photos] if photos.class == Hash %>
+    <% if photos.count < 3; groups = [photos]; else; groups = photos.in_groups(2, false); end %>
+    <div class="attachments">
+      <% groups.each_with_index do |group, i| %>
+        <div class="gallery-row"<% if i > 0 %> style="margin-top: .25em"<% end %>>
+          <% group.each do |photo| %>
+            <div class="attachment image">
+              <% if photo.class == Hash %>
+                <% photo['URL'] = photo[:URL] if photo[:URL] %>
+                <% if photo['URL'].class == String %>
+                  <a href="<%= media_path + photo['URL'].split('/')[-1].split('.')[0] + '-orig.' + photo['URL'].split('/')[-1].split('.')[1] %>" data-fancybox="twitter_<%= tweet[:tweet_id] %>">
+                    <img src="<%= media_path + photo['URL'].split('/')[-1].split('.')[0] + '-orig.' + photo['URL'].split('/')[-1].split('.')[1] %>" class="still-image" />
+                  </a>
+                <% end %>
+              <% else %>
+                <a href="<%= media_path + photo.split('/')[-1].split('.')[0] + '-orig.' + photo.split('/')[-1].split('.')[1] %>" data-fancybox="twitter_<%= tweet[:tweet_id] %>">
+                  <img src="<%= media_path + photo.split('/')[-1].split('.')[0] + '-orig.' + photo.split('/')[-1].split('.')[1] %>" class="still-image" />
+                </a>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
       <% end %>
+    </div>
+
+    <% videos.each do |v| %>
+      <% video = v["URL"] %>
+      <% next if video.nil? %>
+      <a href="<%= media_path + video.split('/')[-1].split('.')[0] + '.' + video.split('/')[-1].split('.')[1].split('?')[0] %>" data-fancybox="twitter_<%= tweet[:tweet_id] %>">
+        <video controls>
+          <source src="<%= media_path + video.split('/')[-1].split('.')[0] + '.' + video.split('/')[-1].split('.')[1].split('?')[0] %>">
+        </video>
+      </a>
     <% end %>
-  </p>
-</div>
+  </div>
+<% end %>

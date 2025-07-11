@@ -1,0 +1,24 @@
+<header style="color: <%= color %>">
+  <p class="<% if post[:content][:author_id] == Hindsight::Application.credentials.discord_id %>sent<% else %>received<% end %>">
+   <small class="sender"><%= post[:content].user.name %>: </small>
+  </p>
+</header>
+<% if post[:content].attachments.count > 0 %>
+  <div class="card-body">
+    <% post[:content].attachments.each do |a| %>
+      <p class="neutral">
+        <% if ['jpg', 'jpeg', 'png', 'webp', 'gif'].include?(a["url"].split('.')[-1].downcase) %>
+          <a data-fancybox="discord_message_<%= post[:content][:discord_id] %>" href='<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/Discord/#{a["url"]}" %>'>
+            <img src="<%= "https://#{Hindsight::Application.credentials.sociallink_url}/media/Discord/#{a["url"]}" %>" />
+          </a>
+        <% else %>
+          Mystery Attachment?
+        <% end %>
+      </p>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card-body <% if post[:content][:author_id] == Hindsight::Application.credentials.discord_id %>sent<% else %>received<% end %>">
+    <%= post[:content]["content"] %>
+  </div>
+<% end %>

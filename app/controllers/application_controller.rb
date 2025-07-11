@@ -255,6 +255,11 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: trip.timestamp.to_i, type: 'presto_trip', content: trip}
     end
 
+    discord_messages = DiscordMessage.where(:timestamp => @date.beginning_of_day..@date.end_of_day).all
+    discord_messages.each do |message|
+      @events << {sort_time: message.timestamp.to_i, type: 'discord_message_' + message.discord_channel_id, content: message}
+    end
+
     skype_messages = SkypeMessage.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
     skype_messages.each do |message|
       @events << {sort_time: message.timestamp, type: 'skype_message_' + message.room_name, content: message}

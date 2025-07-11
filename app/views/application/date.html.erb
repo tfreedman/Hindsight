@@ -48,6 +48,8 @@
                   <%= render 'application/photo_album', event: event %>
                 <% elsif event[:type].start_with?("matrix_event") %>
                   <%= render 'application/matrix_event', post: event, color: colors2(@event_groups[event[:type]]) %>
+                <% elsif event[:type].start_with?("discord_message") %>
+                  <%= render 'application/discord_message', post: event, color: colors2(@event_groups[event[:type]]) %>
                 <% elsif event[:type].start_with?("skype_message_", "adium_message", "pidgin_message", "facebook_message", "hangouts_event_", "google_chat_message_", "google_talk_message_", "mirc_log_", "lounge_log_", "xchat_log_", "mamirc_event_") %>
                   <%= render 'application/message', event: event %>
                 <% elsif event[:type].start_with?("sociallink") %>

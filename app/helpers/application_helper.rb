@@ -51,6 +51,13 @@ module ApplicationHelper
       "DeviantArt"
     elsif k.include?('skype_message_')
       k.gsub('skype_message_', '')
+    elsif k.include?('discord_message_')
+      channel = DiscordChannel.where(channel_id: k.gsub('discord_message_', '').to_i).first
+      if channel.guild_id == 0
+        "#{channel.name}"
+      else
+        "#{channel.guild_name}: #{channel.name}"
+      end
     elsif k.include?('sociallink')
       "SocialLink"
     else

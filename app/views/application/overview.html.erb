@@ -18,9 +18,8 @@
         <strong>Instant Messaging:</strong>
         <ul>
           <% services = {
-          'AdiumMessage' => 'Adium', 'ColloquyMessage' => 'Colloquy', 'FacebookMessage' => 'Facebook', 'EmailMessage' => 'Emails', 'GoogleChatMessage' => 'Google Chat Messages', 'GoogleTalkMessage' => 'Google Talk Messages',
-          'HangoutsEvent' => 'Hangouts', 'LoungeLog' => 'Lounge / Shout', 'MamircEvent' => 'MamIRC', 'MircLog' => 'mIRC', 'MatrixEvent' => 'Matrix',
-          'PidginMessage' => 'Pidgin', 'AndroidMms' => 'MMS (Android)', 'AndroidSms' => 'SMS (Android)', 'SkypeMessage' => 'Skype', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'VoipmsSms' => 'SMS (Voip.ms)', 'XchatLog' => 'X-Chat'} %>
+          'AdiumMessage' => 'Adium',  'AndroidMms' => 'MMS (Android)', 'AndroidSms' => 'SMS (Android)', 'ColloquyMessage' => 'Colloquy', 'DiscordMessage' => 'Discord', 'EmailMessage' => 'Emails', 'FacebookMessage' => 'Facebook', 'GoogleChatMessage' => 'Google Chat Messages', 'GoogleTalkMessage' => 'Google Talk Messages',
+          'HangoutsEvent' => 'Hangouts', 'LoungeLog' => 'Lounge / Shout', 'MamircEvent' => 'MamIRC', 'MircLog' => 'mIRC', 'MatrixEvent' => 'Matrix', 'PidginMessage' => 'Pidgin', 'SkypeMessage' => 'Skype', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'VoipmsSms' => 'SMS (Voip.ms)', 'XchatLog' => 'X-Chat'} %>
           <% services.each do |k, v| %>
             <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>
           <% end %>

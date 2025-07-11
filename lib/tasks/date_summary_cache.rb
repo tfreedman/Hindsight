@@ -14,6 +14,7 @@
       'CalendarHoliday',
       'CalendarOngoing',
       'ColloquyMessage',
+      'DiscordMessage',
       'EmailMessage',
       'FacebookMessage',
       'FinancialTransaction',
@@ -101,6 +102,11 @@
         end
       elsif event_type == 'ColloquyMessage'
         ColloquyMessage.where(enabled: true).find_each do |e|
+          event_date = Time.at(e.timestamp).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'DiscordMessage'
+        DiscordMessage.find_each do |e|
           event_date = Time.at(e.timestamp).to_date.to_s
           dates[event_date] += 1
         end

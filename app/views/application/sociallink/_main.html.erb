@@ -94,7 +94,8 @@
 <% elsif event[:sub_type] == "instagram_post" %>
 <% begin %>
   <% json = JSON.parse(event[:content][:json]) %>
-  <% snpc = ServiceNamePathCache.where(service: 'Instagram', username: event[:content][:instagram_user_id]).first %>
+  <% ig = InstagramAccount.where(instagram_id: event[:content][:instagram_user_id]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Instagram', username: "#{ig.username} (#{ig.instagram_id})").first %>
   <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
     <p>
       <small>
@@ -111,7 +112,7 @@
   </header>
   <div class="card-body">
     <p class="neutral">
-      <%= render 'application/sociallink/instagram_post', event: event, json: json, snpc: snpc %>
+      <%= render 'application/sociallink/instagram_post', post: event, json: json, snpc: snpc %>
     </p>
   </div>
 <% rescue %>

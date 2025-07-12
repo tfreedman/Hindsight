@@ -13,12 +13,12 @@
 
     <ul class="services">
       <% if (@totals['AdiumMessage'] + @totals['ColloquyMessage'] + @totals['FacebookMessage'] + @totals['EmailMessage'] + @totals['GoogleChatMessage'] + @totals['GoogleTalkMessage'] + @totals['HangoutsEvent'] + @totals['LoungeLog'] + @totals['MircLog'] + @totals['MatrixEvent'] + 
-          @totals['PidginMessage'] + @totals['AndroidMms'] + @totals['AndroidSms'] + @totals['WindowsPhoneSms'] + @totals['VoipmsSms'] + @totals['XchatLog']) > 0 %>
+          @totals['PidginMessage'] + @totals['AndroidCall'] + @totals['AndroidMms'] + @totals['AndroidSms'] + @totals['WindowsPhoneSms'] + @totals['VoipmsSms'] + @totals['XchatLog']) > 0 %>
       <li>
         <strong>Instant Messaging:</strong>
         <ul>
           <% services = {
-          'AdiumMessage' => 'Adium',  'AndroidMms' => 'MMS (Android)', 'AndroidSms' => 'SMS (Android)', 'ColloquyMessage' => 'Colloquy', 'DiscordMessage' => 'Discord', 'EmailMessage' => 'Emails', 'FacebookMessage' => 'Facebook', 'GoogleChatMessage' => 'Google Chat Messages', 'GoogleTalkMessage' => 'Google Talk Messages',
+          'AdiumMessage' => 'Adium',  'AndroidCall' => 'Calls (Android)', 'AndroidMms' => 'MMS (Android)', 'AndroidSms' => 'SMS (Android)', 'ColloquyMessage' => 'Colloquy', 'DiscordMessage' => 'Discord', 'EmailMessage' => 'Emails', 'FacebookMessage' => 'Facebook', 'GoogleChatMessage' => 'Google Chat Messages', 'GoogleTalkMessage' => 'Google Talk Messages',
           'HangoutsEvent' => 'Hangouts', 'LoungeLog' => 'Lounge / Shout', 'MamircEvent' => 'MamIRC', 'MircLog' => 'mIRC', 'MatrixEvent' => 'Matrix', 'PidginMessage' => 'Pidgin', 'SkypeMessage' => 'Skype', 'WindowsPhoneSms' => 'SMS (Windows Phone)', 'VoipmsSms' => 'SMS (Voip.ms)', 'XchatLog' => 'X-Chat'} %>
           <% services.each do |k, v| %>
             <%= render :partial => 'application/filter' , locals: {key: k, text: v} %>

@@ -7,6 +7,7 @@
 
     event_types = [
       'AdiumMessage',
+      'AndroidCall',
       'AndroidMms',
       'AndroidSms',
       'BikeshareTrip',
@@ -38,9 +39,9 @@
       'PrestoTrip',
       'SkypeMessage',
       'VoipmsSms',
+      'WiiPlaytime',
       'WindowsPhoneSms',
-      'XchatLog',
-      'WiiPlaytime'
+      'XchatLog'
     ] 
 
     DateSummary.delete_all # Clear the cache
@@ -51,6 +52,11 @@
       if event_type == 'AdiumMessage'
         AdiumMessage.where.not(enabled: false).find_each do |e|
           event_date = Time.at(e.timestamp).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'AndroidCall'
+        AndroidCall.find_each do |e|
+          event_date = Time.at(e.date / 1000).to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == 'AndroidMms'

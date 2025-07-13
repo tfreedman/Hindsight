@@ -1,6 +1,20 @@
-<% if event[:content][:payload] %>
-  <% if event[:content][:payload][:caption] # Photos %>
-      <%= raw(event[:content][:payload][:caption].gsub(/\@\[[0-9]*\]/) { |c|
+<% if defined?(snpc) # Used by Hindsight %>
+  <% media_path = ApplicationController::SOCIALLINK_BASE_MEDIA_URL + "/media/#{snpc.name}/Facebook/#{post[:content][:fb_account]}/" %>
+  <% comment_file = 'application/sociallink/facebook_comment' %>
+<% else # Used by SocialLink %>
+  <% media_path = ApplicationController::SOCIALLINK_BASE_MEDIA_URL + "/media/#{person[:name]}/Facebook/#{post[:content][:fb_account]}/" %>
+  <% comment_file = 'posts/facebook_comment' %>
+<% end %>
+
+<% if !defined?(snpc) %>
+  <% if post[:content].authored_by %>
+    <strong><a href="https://facebook.com/<%= post[:content].authored_by.fbid %>"><%= post[:content].authored_by.payload[:display_name] %></a>: </strong>
+  <% end %>
+<% end %>
+
+<% if post[:content][:payload] %>
+  <% if post[:content][:payload][:caption] # Photos %>
+      <%= raw(post[:content][:payload][:caption].gsub(/\@\[[0-9]*\]/) { |c|
         c = c[2..-2] # Drop @[X]
         user = FBID.where(fbid: c, fbid_type: 'user').first
         if user
@@ -9,19 +23,19 @@
           ":("
         end
       }.gsub("\n", '<br />')) %>
-    <% if event[:content].edge_phototags.count > 0 %>
+    <% if post[:content].edge_phototags.count > 0 %>
       <br />
       <p>
         <em>Pictured:</em>
-        <%= raw event[:content].edge_phototags.map { |edge|
+        <%= raw post[:content].edge_phototags.map { |edge|
           user = FBID.where(fbid: edge.to).first
             "<a href='https://facebook.com/#{user.fbid}'>#{user.payload[:display_name]}</a>"
           }.to_sentence %>
       </p>
     <% end %>
-    <% elsif event[:content][:payload][:content] # Posts %>
+  <% elsif post[:content][:payload][:content] # Posts %>
     <h3>
-      <%= raw(event[:content][:payload][:content].gsub(/\@\[[0-9]*\]/) { |c|
+      <%= raw(post[:content][:payload][:content].gsub(/\@\[[0-9]*\]/) { |c|
         c = c[2..-2] # Drop @[X]
         user = FBID.where(fbid: c, fbid_type: 'user').first
         if user
@@ -31,34 +45,34 @@
         end
       }.gsub("\n", '<br />')) %>
     </h3>
-  <% elsif event[:content][:payload][:title] # Album %>
-    <% photos_in_album = FBIDEdge.where(relationship: 'PHOTO_IN_ALBUM', to: event[:content][:fbid]).pluck(:from) %>
+  <% elsif post[:content][:payload][:title] # Album %>
+    <% photos_in_album = FBIDEdge.where(relationship: 'PHOTO_IN_ALBUM', to: post[:content][:fbid]).pluck(:from) %>
     <h2>
-      <%= event[:content][:payload][:title] %>
+      <%= post[:content][:payload][:title] %>
       <span style="float: right">
-        <a data-fancybox-trigger="facebook_album_<%= event[:content][:fbid] %>"><i class="fas fa-layer-group"></i> <%= photos_in_album.count %></a>
+        <a data-fancybox-trigger="facebook_album_<%= post[:content][:fbid] %>"><i class="fas fa-layer-group"></i> <%= photos_in_album.count %></a>
       </span>
     </h2>
     <% index = 0 %>
     <% FBID.where(fbid: photos_in_album).find_each do |fbid_obj| %>
-      <a data-fancybox="facebook_album_<%= event[:content][:fbid] %>" href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}" %>/media/<%= snpc[:name] %>/Facebook/<%= event[:content][:fb_account] %>/<%= fbid_obj.fbid %>.jpg" data-caption="<%= fbid_obj.payload[:caption] %>">
-        <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}" %>/media/<%= snpc[:name] %>/Facebook/<%= event[:content][:fb_account] %>/<%= fbid_obj.fbid %>.jpg" <% if index > 0 %>style="display: none"<% end %>/>
+      <a data-fancybox="facebook_album_<%= post[:content][:fbid] %>" href="<%= media_path + fbid_obj.fbid %>.jpg" data-caption="<%= fbid_obj.payload[:caption] %>">
+        <img src="<%= media_path + fbid_obj.fbid %>.jpg" <% if index > 0 %>style="display: none"<% end %>/>
         <% index += 1 %>
       </a>
     <% end %>
   <% end %>
 <% end %>
-<% if ['facebook_photo', 'facebook_photo_of'].include?(event[:content][:type]) %>
-  <a data-fancybox href="https://<%= "#{Hindsight::Application.credentials.sociallink_url}" %>/media/<%= snpc[:name] %>/Facebook/<%= event[:content][:fb_account] %>/<%= event[:content][:fbid] %>.jpg">
-    <img src="https://<%= "#{Hindsight::Application.credentials.sociallink_url}" %>/media/<%= snpc[:name] %>/Facebook/<%= event[:content][:fb_account] %>/<%= event[:content][:fbid] %>.jpg" />
+<% if ['photo', 'photo_of'].include?(post[:content][:fbid_type]) %>
+  <a data-fancybox href="<%= media_path + post[:content][:fbid] %>.jpg">
+    <img src="<%= media_path + post[:content][:fbid] %>.jpg" />
   </a>
 <% end %>
 <div class="cf">
-  <span class="left"><%= event[:content].scraped_comments %>/<%= event[:content].total_comments %> Comments</span>
-  <span class="right"><%= event[:content].reactions_scraped_count %>/<%= event[:content].reactions_expected_count %> Reactions</span>
+  <span class="left"><%= post[:content].scraped_comments %>/<%= post[:content].total_comments %> Comments</span>
+  <span class="right"><%= post[:content].reactions_scraped_count %>/<%= post[:content].reactions_expected_count %> Reactions</span>
 </div>
 <ul>
-  <% event[:content].edge_comments.each do |edge| %>
-    <%= render "application/sociallink/facebook_comment", edge_object: FBID.where(fbid: edge.to).first %>
+  <% post[:content].edge_comments.each do |edge| %>
+    <%= render comment_file, edge_object: FBID.where(fbid: edge.to).first %>
   <% end %>
 </ul>

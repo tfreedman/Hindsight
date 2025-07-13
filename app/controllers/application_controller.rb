@@ -216,6 +216,11 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: log.timestamp.to_i, content: log, type: 'xchat_log_' + log.room}
     end
 
+    colloquy_messages = ColloquyMessage.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).where(enabled: true).all
+    colloquy_messages.each do |message|
+      @events << {sort_time: message.timestamp.to_i, content: message, type: 'colloquy_message_' + message.room}
+    end
+
     mamirc_events = MamircEvent.where(:timestamp => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).where(enabled: true).all
     mamirc_events.each do |message|
       @events << {sort_time: message.timestamp.to_i, content: message, type: 'mamirc_event_' + message.room}

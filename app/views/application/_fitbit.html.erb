@@ -2,5 +2,5 @@
   <%= event[:content][:source] %>
 </header>
 <div class="card-body">
-  <%= ((event[:content][:weight] / 1000.0) * 2.2).round(2) %> lb
+  <%= (event[:content][:weight] / 100.0).round(2) %> lb
 </div>

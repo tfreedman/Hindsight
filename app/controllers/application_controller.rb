@@ -196,6 +196,11 @@ class ApplicationController < ActionController::Base
       end
     end
 
+    microsoft_teams_messages = MicrosoftTeamsMessage.where(:original_arrival_time => @date.beginning_of_day..@date.end_of_day).all
+    microsoft_teams_messages.each do |message|
+      @events << {sort_time: message.original_arrival_time.to_i, content: message, type: 'microsoft_teams_message_' + message.conversation_id}
+    end
+
     facebook_messages = FacebookMessage.where(:timestamp => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).all
     facebook_messages.each do |message|
       @events << {sort_time: (message.timestamp / 1000).to_i, content: message, type: 'facebook_message_' + message.room.title}

@@ -34,6 +34,10 @@
   <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = 'mamirc' %>
   <% message = event[:content][:data].split('PRIVMSG ')[1].split(' :')[1] %>
+<% elsif event[:type].start_with?('microsoft_teams_message') %>
+  <% kind = :sent if event[:content][:real_sender] != nil %>
+  <% author = event[:content][:from] %>
+  <% message = event[:content][:content] %>
 <% elsif event[:type].start_with?("mirc_log_", "lounge_log_", "xchat_log_") %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = event[:content][:username] %>

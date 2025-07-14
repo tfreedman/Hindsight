@@ -9,6 +9,8 @@ module ApplicationHelper
       else
         room_title
       end
+    elsif k.start_with?('microsoft_teams_message_')
+      k.split('microsoft_teams_message_')[1] + ' (Teams)'
     elsif k.start_with?('email_message')
       k.split('email_message_')[1] + ' (email)'
     elsif k.include?('facebook_message_')

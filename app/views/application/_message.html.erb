@@ -1,54 +1,55 @@
-<% if event[:type].start_with?('skype_message') %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
-  <% author = event[:content][:author] %>
-  <% message = raw event[:content][:body_xml] %>
-<% elsif event[:type].start_with?('adium_message') %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
+<% real_name = Hindsight::Application.credentials.real_name %>
+<% if event[:type].start_with?('adium_message') %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = event[:content][:real_sender] %>
   <% message = event[:content][:message].html_safe %>
-<% elsif event[:type].start_with?('pidgin_message') %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
-  <% author = (event[:content][:real_sender] || event[:content][:sender]) %>
-  <% message = event[:content][:message].html_safe %>
-<% elsif event[:type].start_with?('facebook_message') %>
-  <% kind = :sent if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>
-  <% author = event[:content][:sender_name] %>
-  <% message = event[:content][:content] %>
-<% elsif event[:type].start_with?('hangouts_event') %>
-  <% kind = :sent if event[:content][:real_name] == Hindsight::Application.credentials.real_name %>
-  <% author = event[:content][:real_name] %>
-<% elsif event[:type].start_with?('google_talk_message_') %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
-  <% author = event[:content][:real_sender] %>
-  <% message = event[:content][:message] %>
-<% elsif event[:type].start_with?('google_chat_message_') %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
-  <% author = event[:content][:real_sender] %>
-  <% message = event[:content][:text] %>
-<% elsif event[:type].start_with?("mirc_log_", "lounge_log_", "xchat_log_") %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
-  <% author = event[:content][:username] %>
-  <% message = event[:content][:line] %>
-<% elsif event[:type].start_with?("colloquy_message_") %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
-  <% author = event[:content][:from] %>
-  <% message = event[:content][:message] %>
-<% elsif event[:type].start_with?('mamirc_event_') %>
-  <% kind = :sent if event[:content][:real_sender] == Hindsight::Application.credentials.real_name %>
-  <% author = 'mamirc' %>
-  <% message = event[:content][:data].split('PRIVMSG ')[1].split(' :')[1] %>
-<% elsif event[:type].start_with?('voipms_sms') %>
-  <% kind = :sent if event[:content][:sms_type] == "1" %>
-  <% author = "#{event[:content][:real_name]} (#{event[:content][:contact]})" %>
-  <% message = event[:content][:message] %>
-<% elsif event[:type].start_with?('android_sms') %>
-  <% kind = :sent if event[:content][:sms_type] == "2" %>
-  <% author = "#{event[:content][:contact_name]} (#{event[:content][:address]})" %>
-  <% message = event[:content][:body] %>
 <% elsif event[:type].start_with?('android_mms') %>
   <% kind = :sent if event[:content][:sms_type] == "2" %>
   <% author = "#{event[:content][:contact_name]} (#{event[:content][:address]})" %>
   <% message = event[:content][:body] %>
+<% elsif event[:type].start_with?('android_sms') %>
+  <% kind = :sent if event[:content][:sms_type] == "2" %>
+  <% author = "#{event[:content][:contact_name]} (#{event[:content][:address]})" %>
+  <% message = event[:content][:body] %>
+<% elsif event[:type].start_with?("colloquy_message_") %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = event[:content][:from] %>
+  <% message = event[:content][:message] %>
+<% elsif event[:type].start_with?('facebook_message') %>
+  <% kind = :sent if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>
+  <% author = event[:content][:sender_name] %>
+  <% message = event[:content][:content] %>
+<% elsif event[:type].start_with?('google_chat_message') %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = event[:content][:real_sender] %>
+  <% message = event[:content][:text] %>
+<% elsif event[:type].start_with?('google_talk_message') %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = event[:content][:real_sender] %>
+  <% message = event[:content][:message] %>
+<% elsif event[:type].start_with?('hangouts_event') %>
+  <% kind = :sent if event[:content][:real_name] == real_name %>
+  <% author = event[:content][:real_name] %>
+<% elsif event[:type].start_with?('mamirc_event') %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = 'mamirc' %>
+  <% message = event[:content][:data].split('PRIVMSG ')[1].split(' :')[1] %>
+<% elsif event[:type].start_with?("mirc_log_", "lounge_log_", "xchat_log_") %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = event[:content][:username] %>
+  <% message = event[:content][:line] %>
+<% elsif event[:type].start_with?('pidgin_message') %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = (event[:content][:real_sender] || event[:content][:sender]) %>
+  <% message = event[:content][:message].html_safe %>
+<% elsif event[:type].start_with?('skype_message') %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = event[:content][:author] %>
+  <% message = raw event[:content][:body_xml] %>
+<% elsif event[:type].start_with?('voipms_sms') %>
+  <% kind = :sent if event[:content][:sms_type] == "1" %>
+  <% author = "#{event[:content][:real_name]} (#{event[:content][:contact]})" %>
+  <% message = event[:content][:message] %>
 <% elsif event[:type].start_with?('windows_phone_sms') %>
   <% kind = :sent if event[:content]['is_sent'] %>
   <% author = "#{event[:content][:real_name]} (#{event[:content][:phone_number]})" %>

@@ -244,14 +244,9 @@ class ApplicationController < ActionController::Base
     matrix_events.each do |event|
       type = 'matrix_event_' + event.room_id
       result = filter_events(event, type, {last_facebook_message_timestamp: last_facebook_message_timestamp})
-      if result
-        offset = 0
 
-        timestamp = (result.origin_server_ts / 1000) + offset
-
-        if @date.beginning_of_day.to_i <= timestamp && @date.end_of_day.to_i >= timestamp
-          @events << {sort_time: timestamp, type: type, content: result}
-        end
+      if result && @date.beginning_of_day.to_i <= event.timestamp && @date.end_of_day.to_i >= event.timestamp
+        @events << {sort_time: event.timestamp, type: type, content: result}
       end
     end
 

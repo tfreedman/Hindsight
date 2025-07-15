@@ -198,7 +198,7 @@ class ApplicationController < ActionController::Base
 
     microsoft_teams_messages = MicrosoftTeamsMessage.where(:original_arrival_time => @date.beginning_of_day..@date.end_of_day).all
     microsoft_teams_messages.each do |message|
-      @events << {sort_time: message.original_arrival_time.to_i, content: message, type: 'microsoft_teams_message_' + message.conversation_id}
+      @events << {sort_time: message.original_arrival_time.to_i, content: message, type: 'microsoft_teams_message_' + message.conversation.display_name.to_s}
     end
 
     facebook_messages = FacebookMessage.where(:timestamp => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).all
@@ -265,7 +265,7 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: message.timestamp.to_i, type: 'discord_message_' + message.discord_channel_id, content: message}
     end
 
-    skype_messages = SkypeMessage.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).all
+    skype_messages = SkypeMessage.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).where(enabled: true).all
     skype_messages.each do |message|
       @events << {sort_time: message.timestamp, type: 'skype_message_' + message.room_name, content: message}
     end

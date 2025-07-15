@@ -35,9 +35,15 @@
   <% author = 'mamirc' %>
   <% message = event[:content][:data].split('PRIVMSG ')[1].split(' :')[1] %>
 <% elsif event[:type].start_with?('microsoft_teams_message') %>
-  <% kind = :sent if event[:content][:real_sender] != nil %>
-  <% author = event[:content][:from] %>
-  <% message = event[:content][:content] %>
+  <% kind = :sent if event[:content][:real_sender] == real_name %>
+  <% author = event[:content][:real_sender] || event[:content][:from] || event[:content][:display_name] %>
+  <% if event[:content][:message_type] == 'Text' %>
+    <% message = event[:content][:content] %>
+  <% elsif event[:content][:message_type] == 'RichText/Html' %>
+    <% message = Nokogiri::HTML.parse(event[:content][:content]).text %>
+  <% else %>
+    <% message = event[:content][:content] #TODO %>
+  <% end %>
 <% elsif event[:type].start_with?("mirc_log_", "lounge_log_", "xchat_log_") %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = event[:content][:username] %>

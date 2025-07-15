@@ -32,7 +32,7 @@
   <% author = event[:content][:real_name] %>
 <% elsif event[:type].start_with?('mamirc_event') %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
-  <% author = 'mamirc' %>
+  <% author = event[:content][:real_sender] || event[:content][:username] %>
   <% message = event[:content][:data].split('PRIVMSG ')[1].split(' :')[1] %>
 <% elsif event[:type].start_with?('microsoft_teams_message') %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>

@@ -231,12 +231,13 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: message.timestamp.to_i, content: message, type: 'mamirc_event_' + message.room}
     end
 
-    mirc_logs = MircLog.where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day)).all
+    mirc_logs = MircLog.where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day), enabled: true).all
     mirc_logs.each do |message|
       @events << {sort_time: message.timestamp.to_i, content: message, type: 'mirc_log_' + message.room}
     end
 
-    matrix_events = MatrixEvent.where(:origin_server_ts => ((@date.beginning_of_day.to_i - 600) * 1000)..((@date.end_of_day.to_i + 600) * 1000)).all
+    matrix_rooms = MatrixRoom.where(enabled: [true, nil]).pluck(:room_id)
+    matrix_events = MatrixEvent.where(:origin_server_ts => ((@date.beginning_of_day.to_i - 600) * 1000)..((@date.end_of_day.to_i + 600) * 1000), room_id: matrix_rooms).all
 
     # Only allow bridged facebook events that are newer than the last Facebook data download
     fm = FacebookMessage.order(timestamp: :desc).first

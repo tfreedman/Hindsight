@@ -1,8 +1,11 @@
-<%
-  if json['snippet']['thumbnails']['maxres']
-    url = json['snippet']['thumbnails']['maxres']['url']
-  elsif json['snippet']['thumbnails']['high']
-    url = json['snippet']['thumbnails']['high']['url']
-  end
-%>
-<a data-fancybox href="https://www.youtube.com/watch?v=<%= event[:content][:video_id] %>"><img src="<%= url %>" /></a>
+<h2>
+  <a style="max-width: 530px; display: inline-block" href="https://www.youtube.com/watch?v=<%= post[:content][:video_id] %>"><%= post[:content][:title] %></a>
+  <span style="float: right">
+    <% if post[:content][:filename] && post[:content][:saved] %>
+      <i class="fas fa-save"></i>
+    <% else %>
+      <i class="far fa-save" style="opacity: 0.5"></i>
+    <% end %>
+  </span>
+</h2>
+<lite-youtube videoid="<%= post[:content][:video_id] %>"></lite-youtube>

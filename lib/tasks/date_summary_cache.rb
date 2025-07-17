@@ -61,12 +61,12 @@
           dates[event_date] += 1
         end
       elsif event_type == 'AndroidMms'
-        AndroidMms.find_each do |e|
+        AndroidMms.where.not(enabled: false).find_each do |e|
           event_date = Time.at(e.date / 1000).to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == 'AndroidSms'
-        AndroidSms.find_each do |e|
+        AndroidSms.where.not(enabled: false).find_each do |e|
           event_date = Time.at(e.date / 1000).to_date.to_s
           dates[event_date] += 1
         end
@@ -205,12 +205,12 @@
           dates[event_date] += 1
         end
       elsif event_type == "MicrosoftTeamsMessage"
-        MicrosoftTeamsMessage.find_each do |e|
+        MicrosoftTeamsMessage.where.not(enabled: false).find_each do |e|
           event_date = e.original_arrival_time.to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == "MircLog"
-        MircLog.find_each do |e|
+        MircLog.where.not(enabled: false).find_each do |e|
           event_date = e.timestamp.to_date.to_s
           dates[event_date] += 1
         end
@@ -243,12 +243,12 @@
           dates[event_date] += 1
         end
       elsif event_type == "SkypeMessage"
-        SkypeMessage.find_each do |e|
+        SkypeMessage.where.not(enabled: false).find_each do |e|
           event_date = Time.at(e.timestamp.to_i).to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == "VoipmsSms"
-        VoipmsSms.find_each do |e|
+        VoipmsSms.where.not(enabled: false).find_each do |e|
           event_date = Time.at(e.date).to_date.to_s
           dates[event_date] += 1
         end
@@ -257,7 +257,7 @@
           dates[e.date] += 1
         end
       elsif event_type == "WindowsPhoneSms"
-        WindowsPhoneSms.find_each do |e|
+        WindowsPhoneSms.where.not(enabled: false).find_each do |e|
           event_date = Time.at(e.timestamp).to_date.to_s
           dates[event_date] += 1
         end

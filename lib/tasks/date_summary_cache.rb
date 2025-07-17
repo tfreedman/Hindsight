@@ -31,6 +31,7 @@
       'LoungeLog',
       'MamircEvent',
       'MatrixEvent',
+      'MicrosoftTeamsMessage',
       'MircLog',
       'N3dsActivityEvent',
       'Photo',
@@ -201,6 +202,11 @@
         MatrixEvent.find_each do |e|
           next if e.sender.start_with?('@facebook_')
           event_date = Time.at(e.origin_server_ts / 1000).to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == "MicrosoftTeamsMessage"
+        MicrosoftTeamsMessage.find_each do |e|
+          event_date = e.original_arrival_time.to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == "MircLog"

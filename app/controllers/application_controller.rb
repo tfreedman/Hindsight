@@ -135,6 +135,11 @@ class ApplicationController < ActionController::Base
       @events << {sort_time: mms.date / 1000, type: 'android_mms_' + (mms.contact_name || '(Unknown)'), content: mms}
     end
 
+    iphone_sms = IphoneSms.where(:date => ((@date.beginning_of_day.to_i - 978307200) * 1000000000)..((@date.end_of_day.to_i - 978307200) * 1000000000)).where(enabled: true).all
+    iphone_sms.each do |sms|
+      @events << {sort_time: Time.gm(2001,1,1).to_i + (sms.date / 1000000000).to_i, type: 'iphone_sms_' + '(Unknown)', content: sms}
+    end
+
     voipms_sms = VoipmsSms.where(:date => (@date.beginning_of_day)..(@date.end_of_day)).where(enabled: true).all
     voipms_sms.each do |sms|
       @events << {sort_time: sms.date.to_i, type: 'voipms_sms_' + (sms.contact || '(Unknown)'), content: sms}
@@ -198,7 +203,7 @@ class ApplicationController < ActionController::Base
 
     microsoft_teams_messages = MicrosoftTeamsMessage.where(:original_arrival_time => @date.beginning_of_day..@date.end_of_day).all
     microsoft_teams_messages.each do |message|
-      @events << {sort_time: message.original_arrival_time.to_i, content: message, type: 'microsoft_teams_message_' + message.conversation.display_name.to_s}
+      @events << {sort_time: message.original_arrival_time.to_i, content: message, type: 'microsoft_teams_message_' + (message.conversation.display_name || '(Unknown)')}
     end
 
     facebook_messages = FacebookMessage.where(:timestamp => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).all

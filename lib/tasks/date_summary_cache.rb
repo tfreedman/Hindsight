@@ -28,6 +28,7 @@
       'HindsightFileDOC',
       'HindsightFilePSD',
       'HindsightFileAI',
+      'IphoneSms',
       'LoungeLog',
       'MamircEvent',
       'MatrixEvent',
@@ -186,6 +187,11 @@
         end
         HindsightFile.where(extension: 'ai').find_each do |e|
           event_date = e.modified_at.to_date.to_s
+          dates[event_date] += 1
+        end
+      elsif event_type == 'IphoneSms'
+        IphoneSms.where(enabled: true).find_each do |e|
+          event_date = (Time.gm(2001,1,1) + e.date / 1000000000).to_date.to_s
           dates[event_date] += 1
         end
       elsif event_type == "LoungeLog"

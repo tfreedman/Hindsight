@@ -27,6 +27,8 @@ module ApplicationHelper
       k.gsub('adium_message_', '')
     elsif k.include?('mirc_log_')
       k.gsub('mirc_log_', '')
+    elsif k.include?('iphone_sms_')
+      k.gsub('iphone_sms_', '') + ' (SMS)'
     elsif k.include?('hangouts_event_')
       (HangoutsConversation.where(conversation_id: k.gsub('hangouts_event_', '')).first.participant_data.pluck('fallback_name') - [Hindsight::Application.credentials.real_name]).to_sentence
     elsif k.include?('android_sms_')

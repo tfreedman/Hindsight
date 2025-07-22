@@ -30,6 +30,10 @@
 <% elsif event[:type].start_with?('hangouts_event') %>
   <% kind = :sent if event[:content][:real_name] == real_name %>
   <% author = event[:content][:real_name] %>
+<% elsif event[:type].start_with?('iphone_sms') %>
+  <% kind = :sent if event[:content][:is_sent] == 1 %>
+  <% author = "#{event[:content][:real_sender]} (#{event[:content][:handle]})" %>
+  <% message = event[:content][:text] %>
 <% elsif event[:type].start_with?('mamirc_event') %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = event[:content][:real_sender] || event[:content][:username] %>

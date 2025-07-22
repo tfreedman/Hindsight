@@ -15,7 +15,7 @@
       <% if (@totals['AdiumMessage'] + @totals['ColloquyMessage'] + @totals['FacebookMessage'] + @totals['EmailMessage'] + @totals['GoogleChatMessage'] + @totals['GoogleTalkMessage'] + @totals['HangoutsEvent'] + @totals['LoungeLog'] + @totals['MicrosoftTeamsMessage'] + @totals['MircLog'] + @totals['MatrixEvent'] + 
           @totals['PidginMessage'] + @totals['AndroidCall'] + @totals['AndroidMms'] + @totals['AndroidSms'] + @totals['WindowsPhoneSms'] + @totals['VoipmsSms'] + @totals['XchatLog']) > 0 %>
       <li>
-        <strong>Instant Messaging:</strong>
+        <input type="checkbox" name="im" checked> <strong>Instant Messaging:</strong>
         <ul>
           <% services = {
           'AdiumMessage' => 'Adium',  'AndroidCall' => 'Calls (Android)', 'AndroidMms' => 'MMS (Android)', 'AndroidSms' => 'SMS (Android)', 'ColloquyMessage' => 'Colloquy', 'DiscordMessage' => 'Discord', 'EmailMessage' => 'Emails', 'FacebookMessage' => 'Facebook', 'GoogleChatMessage' => 'Google Chat', 'GoogleTalkMessage' => 'Google Talk',
@@ -29,7 +29,7 @@
 
     <% if (@totals['BikeshareTrip'] + @totals['PrestoTrip']) > 0 %>
       <li>
-        <strong>Transportation:</strong>
+        <input type="checkbox" name="transport" checked> <strong>Transportation:</strong>
         <ul>
           <% services = {'BikeshareTrip' => 'Bikeshare Trips', 'PrestoTrip' => 'Presto Trips'} %>
           <% services.each do |k, v| %>
@@ -41,7 +41,7 @@
 
     <% if (@totals['FinancialTransaction'] + @totals['FitbitMeasurement'] + @totals['GitHubCommit'] + @totals['Photo'] + @totals['CalendarEvent'] + @totals['CalendarHoliday'] + @totals['PhotoAlbum'] + @totals['N3dsActivityEvent'] + @totals['WiiPlaytime']) > 0 %>
       <li>
-        <strong>Other:</strong>
+        <input type="checkbox" name="other" checked> <strong>Other:</strong>
         <ul>
           <% services = {'CalendarEvent' => 'Calendar Events', 'CalendarHoliday' => 'Holidays', 'FinancialTransaction' => 'Financial Transactions', 
           'FitbitMeasurement' => 'Fitbit Measurements', 'ForumPost' => 'Forum Posts', 'GitHubCommit' => 'GitHub Commits', 'Photo' => 'Photos', 'PhotoAlbum' => 'Photo Album Dates', 'N3dsActivityEvent' => 'Nintendo 3DS Events', 'WiiPlaytime' => 'Nintendo Wii Playtime'} %>
@@ -54,7 +54,7 @@
 
     <% if (@totals['HindsightFilePSD'] + @totals['HindsightFileDOC'] + @totals['HindsightFileAI']) > 0 %>
       <li>
-        <strong>Files:</strong>
+        <input type="checkbox" name="files" checked> <strong>Files:</strong>
         <ul>
           <% services = {'HindsightFilePSD' => 'Photoshop', 'HindsightFileDOC' => 'Documents', 'HindsightFileAI' => 'Illustrator'} %>
           <% services.each do |k, v| %>
@@ -119,14 +119,35 @@
     filters = selectFilters();
     generateDates(filters);
 
-    document.addEventListener("DOMContentLoaded", function(event) {
-      document.querySelectorAll('.services input').forEach(link => {
-        link.addEventListener("click", (e) => {
-          var filters = selectFilters();
-          var g = generateDates(filters);
-          return false;
-        });
-      });
-    });
+    // checkbox code from https://css-tricks.com/indeterminate-checkboxes/
+    const nodeArray = (selector, parent=document) => [].slice.call(parent.querySelectorAll(selector));
+    const allThings = nodeArray('.services input');
+
+    document.addEventListener('change', e => {
+      let check = e.target;
+
+      if (allThings.indexOf(check) === -1) return;
+
+      const children = nodeArray('input', check.parentNode);
+      children.forEach(child => child.checked = check.checked);
+
+      while(check){
+        const parent = (check.closest(['ul']).parentNode).querySelector('input');
+        const siblings = nodeArray('input', parent.closest('li').querySelector(['ul']));
+
+        const checkStatus = siblings.map(check => check.checked);
+        const every = checkStatus.every(Boolean);
+        const some = checkStatus.some(Boolean);
+
+        parent.checked = every;
+        parent.indeterminate = !every && every !== some;
+
+        check = check != parent ? parent : 0;
+      }
+
+      var filters = selectFilters();
+      var g = generateDates(filters);
+      return false;
+    })
   </script>
 </article>

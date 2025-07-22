@@ -45,6 +45,8 @@ body#overview {
         list-style-type: none;
         padding: 0;
         li {margin: 5px 0}
+
+        ul li {margin-left: 20px}
       }
   
       width: 300px;

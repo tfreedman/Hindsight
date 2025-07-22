@@ -58,6 +58,8 @@
                   <%= render 'application/email_message', event: event %>
                 <% elsif event[:type] == "android_call" %>
                   <%= render 'application/android_call', event: event %>
+                <% elsif event[:type].start_with?("iphone_call") %>
+                  <%= render 'application/iphone_call', event: event %>
                 <% elsif event[:type].start_with?("calendar_event") %>
                   <%= render 'application/calendar_event', event: event %>
                 <% elsif event[:type].start_with?('hindsight_file') %>

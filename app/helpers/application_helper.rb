@@ -43,6 +43,8 @@ module ApplicationHelper
       "GitHub Commits"
     elsif k.include?('android_call')
       "Call Log"
+    elsif k.include?('iphone_call')
+      "Call Log"
     elsif k.include?('google_chat_message_')
       k.gsub('google_chat_message_', '') + ' (Hangouts)'
     elsif k.include?('google_talk_message_')

@@ -1,0 +1,20 @@
+<% if event[:type].start_with?('android_call') %>
+  <% kind = :sent if event[:content][:is_sent] %>
+  <% author = "#{event[:content][:contact_name]} (#{event[:content][:number]})" %>
+  <% message = '' %>
+<% elsif event[:type].start_with?('iphone_call') %>
+  <% kind = :sent if event[:content][:ZCALLTYPE] == 1 %>
+  <% author = "#{event[:content][:ZNAME] || 'Unknown'} (#{event[:content][:ZADDRESS]})" %>
+  <% message = '' %>
+<% end %>
+
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
+    <small><%= author %></small>
+  </p>
+</header>
+<div class="card-body">
+  <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
+    <%= message %>
+  </p>
+</div>

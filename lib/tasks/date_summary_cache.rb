@@ -47,7 +47,7 @@
       'XchatLog'
     ] 
 
-    DateSummary.delete_all # Clear the cache
+    # DateSummary.delete_all # Clear the cache
 
     event_types.each do |event_type|
       dates = Hash.new { |hash, key| hash[key] = 0 }
@@ -282,12 +282,20 @@
     
       dates.each do |key, value|
         ds = DateSummary.where(date: key, event_type: event_type).first
-        if ds.nil?
-          DateSummary.create(date: key, event_type: event_type, count: value)
+        if ds
+          ds.update(count: value, indexed_at: Time.now)
+        else
+          DateSummary.create(date: key, event_type: event_type, count: value, indexed_at: Time.now)
         end
       end
     end
 
     ended_at = Time.now
+
+
+    DateSummary.where("indexed_at < ?", started_at).find_each do |d|
+      d.delete
+    end
+
     puts "Ended at #{ended_at}"
     puts "DateSummary cache took #{distance_of_time_in_words(ended_at, started_at)} to build"

@@ -467,6 +467,17 @@ class ApplicationController < ActionController::Base
       elsif type.start_with?('hangouts_event')
         @event_type_headings['Hangouts Rooms:'] = [] if @event_type_headings['Hangouts Rooms:'].nil?
         @event_type_headings['Hangouts Rooms:'] << type
+      elsif type.start_with?('discord')
+        channel = DiscordChannel.where(channel_id: type.gsub('discord_message_', '').to_i).first
+        if channel.guild_id == 0
+          @event_type_headings['Other:'] = [] if @event_type_headings['Other:'].nil?
+          @event_type_headings['Other:'] << type
+#          "#{channel.name}"
+        else
+          @event_type_headings["Discord - #{channel.guild_name}:"] = [] if @event_type_headings["Discord - #{channel.guild_name}:"].nil?
+          @event_type_headings["Discord - #{channel.guild_name}:"] << type
+#          "#{channel.guild_name}: #{channel.name}"
+        end
       else
         @event_type_headings['Other:'] = [] if @event_type_headings['Other:'].nil?
         @event_type_headings['Other:'] << type

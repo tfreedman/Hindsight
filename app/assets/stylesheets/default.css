@@ -382,7 +382,7 @@ body#date {
         list-style-type: none;
 
         li {
-          margin: 5px 0;
+          margin: 5px 0 5px 10px;
           &.details {
             padding-bottom: 0;
             margin: 10px 0;

@@ -133,12 +133,29 @@
   <% else %>
     <h2>No Ongoing Events :(</h2>
   <% end %>
-  
+
+  <% positions = {} %>
   <% if @event_groups.count > 0 %>
-    <h2>Columns:</h2>
-    <ul class="services">
+    <h2 style="display: none">Columns:</h2>
+    <!-- <ul class="" style="display: none"> -->
       <% @event_groups.each_with_index do |(key, value), index| %>
-        <li><input autocomplete="off" type="checkbox" checked="true" data-position="<%= alternate_time_zones(@date).count + index + 3 %>" /> <%= friendly_groups(key) %></li>
+        <% positions[key] = alternate_time_zones(@date).count + index + 3 %>
+        <!-- <li><input autocomplete="off" type="checkbox" checked="true" data-position="<%= positions[key] %>" /> <%= friendly_groups(key) %></li> -->
+      <% end %>
+    <!-- </ul> -->
+  <% end %>
+
+  <% if @event_type_headings.count > 0 %>
+    <ul class="services">
+      <% @event_type_headings.each_with_index do |(key, value), index| %>
+        <li>
+          <input autocomplete="off" type="checkbox" name="<%= key %>" checked> <strong><%= key %></strong>
+          <ul>
+            <% value.each do |group| %>
+              <li><input autocomplete="off" type="checkbox" checked="true" data-position="<%= positions[group] %>" /> <%= friendly_groups(group, true) %></li>
+            <% end %>
+          </ul>
+        </li>
       <% end %>
     </ul>
   <% end %>

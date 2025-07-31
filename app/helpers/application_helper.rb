@@ -1,7 +1,7 @@
 module ApplicationHelper
   include UserFilters
 
-  def friendly_groups(k)
+  def friendly_groups(k, alt = false)
     if k.include?('matrix_event_')
       room_title = MatrixRoom.where(room_id: k.gsub('matrix_event_', '')).first.name
       if room_title == '' || room_title.nil?
@@ -61,10 +61,10 @@ module ApplicationHelper
       "PRESTO"
     elsif k.include?('discord_message_')
       channel = DiscordChannel.where(channel_id: k.gsub('discord_message_', '').to_i).first
-      if channel.guild_id == 0
+      if channel.guild_id == 0 || alt
         "#{channel.name}"
       else
-        "#{channel.guild_name}: #{channel.name}"
+        "#{channel.guild_name} - #{channel.name}"
       end
     elsif k.include?('sociallink')
       "SocialLink"

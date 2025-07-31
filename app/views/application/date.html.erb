@@ -103,19 +103,57 @@
   window.addEventListener("load", redraw);
   window.onresize = redraw;
 
+    // checkbox code from https://css-tricks.com/indeterminate-checkboxes/
+    const nodeArray = (selector, parent=document) => [].slice.call(parent.querySelectorAll(selector));
+    const allThings = nodeArray('.services input');
 
-  function toggleColumn(column) {
-    document.querySelectorAll(`section table td:nth-child(${column}), section table th:nth-child(${column})`).forEach(td => {
-      td.classList.toggle('hidden');
-    });
-  }
+    document.addEventListener('change', e => {
+      let check = e.target;
 
-  document.addEventListener("DOMContentLoaded", function(event) {
-    document.querySelectorAll('.services input').forEach(link => {
-      link.addEventListener("click", (e) => {
-        toggleColumn(link.dataset.position);
-        return false;
+      if (allThings.indexOf(check) === -1) return;
+
+      const children = nodeArray('input', check.parentNode);
+      children.forEach(child => child.checked = check.checked);
+
+      while(check){
+        const parent = (check.closest(['ul']).parentNode).querySelector('input');
+        const siblings = nodeArray('input', parent.closest('li').querySelector(['ul']));
+
+        const checkStatus = siblings.map(check => check.checked);
+        const every = checkStatus.every(Boolean);
+        const some = checkStatus.some(Boolean);
+
+        parent.checked = every;
+        parent.indeterminate = !every && every !== some;
+
+        check = check != parent ? parent : 0;
+      }
+
+      toggleColumns();
+      return false;
+    })
+
+  function toggleColumns() {
+    console.log('toggleColumns called');
+
+    document.querySelectorAll('.services input[data-position]').forEach(l => {
+      var position = l.dataset.position;
+      var isChecked = l.checked;
+
+      var isColumnEnabled = !document.querySelectorAll(`section table th:nth-child(${position})`)[0].classList.contains("hidden");
+
+      if ((isColumnEnabled && isChecked) || (!isColumnEnabled && !isChecked)) {
+        console.log('Skipping row');
+        return; // do nothing
+      }
+
+      document.querySelectorAll(`section table td:nth-child(${position}), section table th:nth-child(${position})`).forEach(td => {
+        if (isChecked && td.classList.contains("hidden")) {
+          td.classList.remove('hidden');
+        } else if (!isChecked && !td.classList.contains("hidden")) {
+          td.classList.add('hidden');
+        }
       });
     });
-  });
+  }
 </script>

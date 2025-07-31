@@ -12,7 +12,11 @@ module ApplicationHelper
     elsif k.start_with?('microsoft_teams_message_')
       k.split('microsoft_teams_message_')[1].to_s + ' (Teams)'
     elsif k.start_with?('email_message')
-      k.split('email_message_')[1] + ' (email)'
+      if alt
+        k.split('email_message_')[1]
+      else
+        k.split('email_message_')[1] + ' (email)'
+      end
     elsif k.include?('facebook_message_')
       k.gsub('facebook_message_', '')
     elsif k.include?('forum_post')
@@ -22,7 +26,11 @@ module ApplicationHelper
     elsif k.include?('calendar_event_')
       k = k.gsub('calendar_event_', '')
       k = k[0..-10] if k.downcase.ends_with?(' calendar')
-      k + ' (Calendar)'
+      if alt
+        k
+      else
+        k + ' (Calendar)'
+      end
     elsif k.include?('adium_message_')
       k.gsub('adium_message_', '')
     elsif k.include?('mirc_log_')

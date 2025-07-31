@@ -137,12 +137,12 @@ class ApplicationController < ActionController::Base
 
     iphone_call = IphoneCall.where(:ZDATE => (@date.beginning_of_day.to_i - 978307200)..(@date.end_of_day.to_i - 978307200)).where(enabled: true).all
     iphone_call.each do |call|
-      @events << {sort_time: (Time.gm(2001,1,1).to_i + call.ZDATE), type: 'iphone_call_' + '(Unknown)', content: call}
+      @events << {sort_time: (Time.gm(2001,1,1) + call.ZDATE), type: 'iphone_call_' + '(Unknown)', content: call}
     end
 
     iphone_sms = IphoneSms.where(:date => ((@date.beginning_of_day.to_i - 978307200) * 1000000000)..((@date.end_of_day.to_i - 978307200) * 1000000000)).where(enabled: true).all
     iphone_sms.each do |sms|
-      @events << {sort_time: Time.gm(2001,1,1).to_i + (sms.date / 1000000000).to_i, type: 'iphone_sms_' + '(Unknown)', content: sms}
+      @events << {sort_time: Time.gm(2001,1,1) + (sms.date / 1000000000).to_i, type: 'iphone_sms_' + '(Unknown)', content: sms}
     end
 
     voipms_sms = VoipmsSms.where(:date => (@date.beginning_of_day)..(@date.end_of_day)).where(enabled: true).all

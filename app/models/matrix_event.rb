@@ -26,6 +26,6 @@ class MatrixEvent < ActiveRecord::Base
   end
 
   def timestamp
-    return (self.origin_server_ts / 1000).to_i + (self.offset || 0)
+    return Time.at((self.origin_server_ts + (self.offset || 0)) / 1000.to_f)
   end
 end

@@ -472,6 +472,14 @@ class ApplicationController < ActionController::Base
       elsif type.start_with?('hangouts_event')
         @event_type_headings['Hangouts Rooms:'] = [] if @event_type_headings['Hangouts Rooms:'].nil?
         @event_type_headings['Hangouts Rooms:'] << type
+
+      elsif type.start_with?('calendar_')
+        @event_type_headings['Calendars:'] = [] if @event_type_headings['Calendars:'].nil?
+        @event_type_headings['Calendars:'] << type
+
+      elsif type.start_with?('email_message_')
+        @event_type_headings['Email Accounts:'] = [] if @event_type_headings['Email Accounts:'].nil?
+        @event_type_headings['Email Accounts:'] << type
       elsif type.start_with?('discord')
         channel = DiscordChannel.where(channel_id: type.gsub('discord_message_', '').to_i).first
         if channel.guild_id == 0

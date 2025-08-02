@@ -142,7 +142,12 @@ class ApplicationController < ActionController::Base
 
     iphone_sms = IphoneSms.where(:date => ((@date.beginning_of_day.to_i - 978307200) * 1000000000)..((@date.end_of_day.to_i - 978307200) * 1000000000)).where(enabled: true).all
     iphone_sms.each do |sms|
-      @events << {sort_time: Time.gm(2001,1,1) + (sms.date / 1000000000).to_i, type: 'iphone_sms_' + '(Unknown)', content: sms}
+      if sms.real_receiver && sms.real_sender
+        sender = ([sms.real_sender, sms.real_receiver] - [Hindsight::Application.credentials.real_name]).sort[0].to_s
+      else
+        sender = sms.handle
+      end
+      @events << {sort_time: Time.gm(2001,1,1) + (sms.date / 1000000000).to_i, type: 'iphone_sms_' + sender, content: sms}
     end
 
     voipms_sms = VoipmsSms.where(:date => (@date.beginning_of_day)..(@date.end_of_day)).where(enabled: true).all
@@ -238,7 +243,7 @@ class ApplicationController < ActionController::Base
 
     mamirc_events = MamircEvent.where(:timestamp => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).where(enabled: true).all
     mamirc_events.each do |message|
-      @events << {sort_time: message.timestamp, content: message, type: 'mamirc_event_' + message.room}
+      @events << {sort_time: Time.at(message.timestamp / 1000.to_f), content: message, type: 'mamirc_event_' + message.room}
     end
 
     mirc_logs = MircLog.where(:timestamp => (@date.beginning_of_day)..(@date.end_of_day), enabled: true).all
@@ -472,7 +477,9 @@ class ApplicationController < ActionController::Base
       elsif type.start_with?('hangouts_event')
         @event_type_headings['Hangouts Rooms:'] = [] if @event_type_headings['Hangouts Rooms:'].nil?
         @event_type_headings['Hangouts Rooms:'] << type
-
+      elsif type.start_with?('facebook_message')
+        @event_type_headings['Messenger (FB):'] = [] if @event_type_headings['Messenger (FB):'].nil?
+        @event_type_headings['Messenger (FB):'] << type
       elsif type.start_with?('calendar_')
         @event_type_headings['Calendars:'] = [] if @event_type_headings['Calendars:'].nil?
         @event_type_headings['Calendars:'] << type

@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "real_sender"
     t.text "real_receiver"
     t.boolean "enabled", default: true
+    t.index ["enabled"], name: "adium_messages_enabled_idx"
     t.index ["timestamp"], name: "adium_messages_timestamp_idx"
   end
 
@@ -36,9 +37,10 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "subscription_component_name"
     t.text "readable_date"
     t.text "contact_name"
+    t.index ["date"], name: "android_calls_date_idx"
   end
 
-  create_table "android_mmses", id: :serial, force: :cascade do |t|
+  create_table "android_mmses", id: :integer, default: -> { "nextval('android_mms_id_seq'::regclass)" }, force: :cascade do |t|
     t.text "xml"
     t.text "xml_sha256"
     t.text "address"
@@ -49,10 +51,11 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.bigint "date"
     t.boolean "enabled"
     t.index ["date"], name: "android_mmses_date_idx"
+    t.index ["enabled"], name: "android_mmses_enabled_idx"
     t.index ["xml_sha256"], name: "android_mmses_xml_sha256_idx"
   end
 
-  create_table "android_smses", id: :serial, force: :cascade do |t|
+  create_table "android_smses", id: :integer, default: -> { "nextval('smses_id_seq'::regclass)" }, force: :cascade do |t|
     t.text "protocol"
     t.text "address"
     t.bigint "date"
@@ -69,7 +72,9 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "readable_date"
     t.text "contact_name"
     t.text "service_center"
+    t.boolean "enabled"
     t.index ["date"], name: "android_smses_date_idx"
+    t.index ["enabled"], name: "android_smses_enabled_idx"
   end
 
   create_table "bikeshare_trips", id: :serial, force: :cascade do |t|
@@ -97,7 +102,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["sha512"], name: "calendar_events_sha512_idx"
   end
 
-  create_table "colloquy_messages", id: :serial, force: :cascade do |t|
+  create_table "colloquy_messages", id: :integer, default: -> { "nextval('untitled_table_id_seq2'::regclass)" }, force: :cascade do |t|
     t.text "message_id"
     t.integer "timestamp"
     t.text "from"
@@ -107,19 +112,68 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "real_sender"
     t.text "real_receiver"
     t.boolean "enabled", default: true
+    t.index ["enabled"], name: "colloquy_messages_enabled_idx"
     t.index ["timestamp"], name: "colloquy_messages_timestamp_idx"
     t.unique_constraint ["message_id"], name: "colloquy_messages_message_id_key"
   end
 
-  create_table "date_summaries", id: :serial, force: :cascade do |t|
+  create_table "date_summaries", id: :integer, default: -> { "nextval('dates_id_seq'::regclass)" }, force: :cascade do |t|
     t.date "date"
     t.text "event_type"
     t.integer "count"
+    t.timestamptz "indexed_at"
     t.index ["date", "event_type"], name: "dates_date_type_idx", unique: true
     t.index ["date"], name: "dates_date_idx"
   end
 
-  create_table "email_messages", id: :serial, force: :cascade do |t|
+  create_table "discord_channels", id: :serial, force: :cascade do |t|
+    t.bigint "channel_id", null: false
+    t.text "discord_type"
+    t.text "category_id"
+    t.text "category"
+    t.text "name"
+    t.text "topic"
+    t.bigint "guild_id"
+    t.text "guild_name"
+    t.text "guild_icon_url"
+
+    t.unique_constraint ["channel_id"], name: "discord_channels_discord_id_key"
+  end
+
+  create_table "discord_messages", id: :serial, force: :cascade do |t|
+    t.text "discord_type"
+    t.timestamptz "timestamp"
+    t.timestamptz "timestamp_edited"
+    t.timestamptz "call_ended_timestamp"
+    t.boolean "is_pinned"
+    t.text "content"
+    t.text "attachments"
+    t.text "embeds"
+    t.text "stickers"
+    t.text "reactions"
+    t.text "mentions"
+    t.text "inline_emojis"
+    t.text "discord_channel_id"
+    t.bigint "discord_id", null: false
+    t.bigint "author_id", null: false
+    t.index ["timestamp"], name: "discord_messages_timestamp_idx"
+    t.unique_constraint ["discord_id"], name: "discord_messages_discord_id_key"
+  end
+
+  create_table "discord_users", id: :serial, force: :cascade do |t|
+    t.text "name"
+    t.text "discriminator"
+    t.text "nickname"
+    t.boolean "is_bot"
+    t.text "roles"
+    t.text "avatarURL"
+    t.text "color"
+    t.bigint "author_id", null: false
+
+    t.unique_constraint ["author_id"], name: "discord_users_author_id_key"
+  end
+
+  create_table "email_messages", id: :integer, default: -> { "nextval('emails_id_seq'::regclass)" }, force: :cascade do |t|
     t.text "account"
     t.timestamptz "timestamp"
     t.text "subject"
@@ -132,6 +186,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "message_id"
     t.text "folder"
     t.binary "body"
+    t.index ["timestamp"], name: "email_messages_timestamp_idx"
   end
 
   create_table "facebook_messages", id: :serial, force: :cascade do |t|
@@ -155,13 +210,14 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "new_room_id"
 
     t.unique_constraint ["new_room_id"], name: "facebook_rooms_new_room_id_key"
+    t.unique_constraint ["thread_path"], name: "facebook_rooms_thread_path_key"
   end
 
   create_table "fitbit_measurements", id: :serial, force: :cascade do |t|
     t.integer "log_id"
     t.text "source"
     t.decimal "bmi"
-    t.integer "weight"
+    t.decimal "weight"
     t.decimal "fat"
   end
 
@@ -198,7 +254,9 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.boolean "enabled"
     t.text "room"
     t.integer "created_date"
-
+    t.index ["created_date"], name: "google_chat_messages_created_date_idx"
+    t.index ["enabled"], name: "google_chat_messages_enabled_idx"
+    t.index ["room"], name: "google_chat_messages_room_idx"
     t.unique_constraint ["topic_id"], name: "google_chat_messages_topic_id_key"
   end
 
@@ -211,6 +269,8 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "real_receiver"
     t.boolean "enabled"
     t.text "room"
+    t.index ["enabled"], name: "google_talk_messages_enabled_idx"
+    t.index ["timestamp"], name: "google_talk_messages_timestamp_idx"
   end
 
   create_table "hangouts_conversations", id: :serial, force: :cascade do |t|
@@ -243,6 +303,8 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.boolean "advances_sort_timestamp"
     t.text "real_name"
     t.boolean "enabled", default: true
+    t.index ["conversation_id"], name: "hangouts_events_conversation_id_idx"
+    t.index ["enabled"], name: "hangouts_events_enabled_idx"
     t.index ["timestamp"], name: "hangouts_events_timestamp_idx"
   end
 
@@ -256,7 +318,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.unique_constraint ["path"], name: "hindsight_files_path_key"
   end
 
-  create_table "historical_weather_readings", id: :serial, force: :cascade do |t|
+  create_table "historical_weather_readings", id: :integer, default: -> { "nextval('historical_weather_id_seq'::regclass)" }, force: :cascade do |t|
     t.decimal "wdir"
     t.decimal "temp"
     t.decimal "maxt"
@@ -286,7 +348,102 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["timestamp"], name: "historical_weather_readings_timestamp_idx"
   end
 
-  create_table "locations", id: :serial, force: :cascade do |t|
+  create_table "iphone_calls", id: :serial, force: :cascade do |t|
+    t.integer "Z_ENT"
+    t.integer "Z_OPT"
+    t.integer "ZANSWERED"
+    t.integer "ZCALL_CATEGORY"
+    t.integer "ZCALLTYPE"
+    t.integer "ZDISCONNECTED_CAUSE"
+    t.integer "ZFACE_TIME_DATA"
+    t.integer "ZHANDLE_TYPE"
+    t.integer "ZNUMBER_AVAILABILITY"
+    t.integer "ZORIGINATED"
+    t.integer "ZREAD"
+    t.decimal "ZDURATION"
+    t.text "ZDEVICE_ID"
+    t.text "ZISO_COUNTRY_CODE"
+    t.text "ZLOCATION"
+    t.text "ZNAME"
+    t.text "ZSERVICE_PROVIDER"
+    t.text "ZUNIQUE_ID"
+    t.text "ZADDRESS"
+    t.boolean "enabled", default: true
+    t.decimal "ZDATE"
+    t.text "contact_name"
+  end
+
+  create_table "iphone_smses", id: :serial, force: :cascade do |t|
+    t.text "guid"
+    t.text "text"
+    t.integer "replace"
+    t.text "service_center"
+    t.integer "handle_id"
+    t.text "subject"
+    t.text "country"
+    t.integer "version"
+    t.integer "message_type"
+    t.text "service"
+    t.text "account"
+    t.text "account_guid"
+    t.integer "error"
+    t.bigint "date"
+    t.bigint "date_read"
+    t.bigint "date_delivered"
+    t.integer "is_delivered"
+    t.integer "is_finished"
+    t.integer "is_emote"
+    t.integer "is_from_me"
+    t.integer "is_empty"
+    t.integer "is_delayed"
+    t.integer "is_auto_reply"
+    t.integer "is_prepared"
+    t.integer "is_read"
+    t.integer "is_system_message"
+    t.integer "is_sent"
+    t.integer "has_dd_results"
+    t.integer "is_service_message"
+    t.integer "is_forward"
+    t.integer "was_downgraded"
+    t.integer "is_archive"
+    t.integer "cache_has_attachments"
+    t.text "cache_roomnames"
+    t.integer "was_data_detected"
+    t.integer "was_deduplicated"
+    t.integer "is_audio_message"
+    t.integer "is_played"
+    t.bigint "date_played"
+    t.integer "item_type"
+    t.integer "other_handle"
+    t.text "group_title"
+    t.integer "group_action_type"
+    t.integer "share_status"
+    t.integer "share_direction"
+    t.integer "is_expirable"
+    t.integer "expire_state"
+    t.integer "message_action_type"
+    t.integer "message_source"
+    t.text "associated_message_guid"
+    t.integer "associated_message_type"
+    t.text "balloon_bundle_id"
+    t.text "payload_data"
+    t.text "expressive_send_style_id"
+    t.integer "associated_message_range_location"
+    t.integer "associated_message_range_length"
+    t.integer "time_expressive_send_played"
+    t.text "message_summary_info"
+    t.integer "ck_sync_state"
+    t.text "ck_record_id"
+    t.text "ck_record_change_tag"
+    t.text "destination_caller_id"
+    t.binary "attributed_body"
+    t.boolean "enabled", default: true
+    t.text "handle"
+    t.text "real_sender"
+    t.text "real_receiver"
+  end
+
+  create_table "locations", id: :integer, default: -> { "nextval('additional_locations_id_seq'::regclass)" }, force: :cascade do |t|
     t.date "date"
     t.text "name"
     t.text "tz"
@@ -305,10 +462,11 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.boolean "enabled", default: true
     t.text "real_sender"
     t.text "real_receiver"
+    t.index ["enabled"], name: "lounge_logs_enabled_idx"
     t.index ["timestamp"], name: "lounge_logs_timestamp_idx"
   end
 
-  create_table "mamirc_events", id: :serial, force: :cascade do |t|
+  create_table "mamirc_events", id: :integer, default: -> { "nextval('mamirc_logs_id_seq'::regclass)" }, force: :cascade do |t|
     t.integer "connection_id"
     t.integer "sequence"
     t.bigint "timestamp"
@@ -319,6 +477,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "real_sender"
     t.text "real_receiver"
     t.boolean "enabled"
+    t.index ["enabled"], name: "mamirc_events_enabled_idx"
     t.index ["timestamp"], name: "mamirc_events_timestamp_idx"
   end
 
@@ -333,6 +492,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "unsigned"
     t.text "plaintext"
     t.index ["event_id"], name: "matrix_events_event_id_idx"
+    t.index ["event_type"], name: "matrix_events_event_type_idx"
     t.index ["origin_server_ts"], name: "matrix_events_origin_server_ts_idx"
     t.index ["room_id"], name: "matrix_events_room_id_idx"
     t.index ["sender"], name: "matrix_events_sender_idx"
@@ -351,15 +511,45 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.boolean "scraping_enabled", default: true
   end
 
+  create_table "microsoft_teams_conversations", id: :serial, force: :cascade do |t|
+    t.text "conversation_id"
+    t.text "display_name"
+    t.bigint "version"
+    t.text "properties"
+    t.text "thread_properties"
+  end
+
+  create_table "microsoft_teams_messages", id: :serial, force: :cascade do |t|
+    t.bigint "message_id"
+    t.text "display_name"
+    t.timestamptz "original_arrival_time"
+    t.text "message_type"
+    t.bigint "version"
+    t.text "content"
+    t.text "conversation_id"
+    t.text "from"
+    t.text "properties"
+    t.text "amsreferences"
+    t.text "real_sender"
+    t.boolean "enabled", default: true
+    t.index ["enabled"], name: "microsoft_teams_messages_enabled_idx"
+    t.index ["original_arrival_time"], name: "microsoft_teams_messages_original_arrival_time_idx"
+  end
+
   create_table "mirc_logs", id: :serial, force: :cascade do |t|
     t.timestamptz "timestamp"
     t.text "room"
     t.text "username"
     t.text "line"
     t.text "real_sender"
+    t.boolean "enabled", default: true
+    t.text "real_receiver"
+    t.index ["enabled"], name: "mirc_logs_enabled_idx"
+    t.index ["room"], name: "mirc_logs_room_idx"
+    t.index ["timestamp"], name: "mirc_logs_timestamp_idx"
   end
 
-  create_table "n3ds_activity_events", id: :serial, force: :cascade do |t|
+  create_table "n3ds_activity_events", id: :integer, default: -> { "nextval('\"3ds_activity_events_id_seq\"'::regclass)" }, force: :cascade do |t|
     t.text "date"
     t.text "game"
     t.text "play_time"
@@ -369,7 +559,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["date", "game", "console"], name: "n3ds_activity_events_date_game_console_idx", unique: true
   end
 
-  create_table "n3ds_activity_logs", id: :serial, force: :cascade do |t|
+  create_table "n3ds_activity_logs", id: :integer, default: -> { "nextval('\"3ds_activity_logs_id_seq\"'::regclass)" }, force: :cascade do |t|
     t.text "console"
     t.text "game"
     t.text "play_time"
@@ -381,7 +571,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.integer "average_play_time_minutes"
   end
 
-  create_table "netflix_activities", id: :serial, force: :cascade do |t|
+  create_table "netflix_activities", id: :integer, default: -> { "nextval('netflix_activity_id_seq'::regclass)" }, force: :cascade do |t|
     t.text "title"
     t.text "videoTitle"
     t.integer "movieID"
@@ -469,6 +659,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "message"
     t.integer "timestamp"
     t.boolean "enabled", default: true
+    t.index ["enabled"], name: "pidgin_messages_enabled_idx"
     t.index ["timestamp"], name: "pidgin_messages_timestamp_idx"
   end
 
@@ -533,7 +724,12 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.integer "extprop_chatmsg_is_pending"
     t.text "real_sender"
     t.text "room_name"
-
+    t.boolean "enabled", default: true
+    t.text "real_receiver"
+    t.index ["enabled"], name: "skype_messages_enabled_idx"
+    t.index ["real_receiver"], name: "skype_messages_real_receiver_idx"
+    t.index ["real_sender"], name: "skype_messages_real_sender_idx"
+    t.index ["timestamp"], name: "skype_messages_timestamp_idx"
     t.unique_constraint ["guid"], name: "skype_messages_guid_key"
   end
 
@@ -596,6 +792,8 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "message"
     t.boolean "enabled"
     t.text "real_name"
+    t.index ["date"], name: "voipms_smses_date_idx"
+    t.index ["enabled"], name: "voipms_smses_enabled_idx"
   end
 
   create_table "wii_playtimes", id: :serial, force: :cascade do |t|
@@ -612,6 +810,9 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "timestamp_text"
     t.integer "timestamp"
     t.text "real_name"
+    t.boolean "enabled"
+    t.index ["enabled"], name: "windows_phone_smses_enabled_idx"
+    t.index ["timestamp"], name: "windows_phone_smses_timestamp_idx"
   end
 
   create_table "wunderlist_lists", id: :serial, force: :cascade do |t|
@@ -648,5 +849,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "real_sender"
     t.text "real_receiver"
     t.boolean "enabled", default: true
+    t.index ["enabled"], name: "xchat_logs_enabled_idx"
+    t.index ["timestamp"], name: "xchat_logs_timestamp_idx"
   end
 end

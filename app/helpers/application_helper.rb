@@ -23,6 +23,8 @@ module ApplicationHelper
       "Forum Posts"
     elsif k.include?('pidgin_message_')
       k.gsub('pidgin_message_', '')
+    elsif k.include?('bikeshare_trip')
+      k = 'Bike Share Toronto'
     elsif k.include?('calendar_event_')
       k = k.gsub('calendar_event_', '')
       k = k[0..-10] if k.downcase.ends_with?(' calendar')
@@ -31,6 +33,10 @@ module ApplicationHelper
       else
         k + ' (Calendar)'
       end
+    elsif k.include?('mamirc_event')
+      k.gsub('mamirc_event_', '') + ' (MamIRC)'
+    elsif k.include?('colloquy_message_')
+      k = k.split('/')[-1]
     elsif k.include?('adium_message_')
       k.gsub('adium_message_', '')
     elsif k.include?('mirc_log_')

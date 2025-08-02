@@ -1,6 +1,6 @@
 <header style="color: <%= color %>">
   <p class="<% if post[:content][:author_id] == Hindsight::Application.credentials.discord_id %>sent<% else %>received<% end %>">
-   <small class="sender"><%= post[:content].user.name %>: </small>
+   <small class="sender"><i class="fab fa-discord"></i> <%= post[:content].user.name %>: </small>
   </p>
 </header>
 <% if post[:content].attachments.count > 0 %>

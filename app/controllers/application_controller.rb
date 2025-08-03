@@ -114,7 +114,7 @@ class ApplicationController < ActionController::Base
             name
           end
         }.to_sentence
-        @events << {sort_time: photo.timestamp, type: 'Photos', content: photo, caption: phototags}
+        @events << {sort_time: Time.at(photo.timestamp), type: 'Photos', content: photo, caption: phototags}
       rescue
         logger.info photo.id
       end
@@ -238,7 +238,7 @@ class ApplicationController < ActionController::Base
 
     colloquy_messages = ColloquyMessage.where(:timestamp => @date.beginning_of_day.to_i..@date.end_of_day.to_i).where(enabled: true).all
     colloquy_messages.each do |message|
-      @events << {sort_time: Time.at(message.timestamp), content: message, type: 'colloquy_message_' + message.room}
+      @events << {sort_time: Time.at(message.timestamp), content: message, type: 'colloquy_message_' + CGI.unescape(message.room)}
     end
 
     mamirc_events = MamircEvent.where(:timestamp => (@date.beginning_of_day.to_i * 1000)..(@date.end_of_day.to_i * 1000)).where(enabled: true).all

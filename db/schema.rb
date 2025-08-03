@@ -40,7 +40,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["date"], name: "android_calls_date_idx"
   end
 
-  create_table "android_mmses", id: :integer, default: -> { "nextval('android_mms_id_seq'::regclass)" }, force: :cascade do |t|
+  create_table "android_mmses", id: :serial, force: :cascade do |t|
     t.text "xml"
     t.text "xml_sha256"
     t.text "address"
@@ -55,7 +55,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["xml_sha256"], name: "android_mmses_xml_sha256_idx"
   end
 
-  create_table "android_smses", id: :integer, default: -> { "nextval('smses_id_seq'::regclass)" }, force: :cascade do |t|
+  create_table "android_smses", id: :serial, force: :cascade do |t|
     t.text "protocol"
     t.text "address"
     t.bigint "date"
@@ -102,7 +102,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["sha512"], name: "calendar_events_sha512_idx"
   end
 
-  create_table "colloquy_messages", id: :integer, default: -> { "nextval('untitled_table_id_seq2'::regclass)" }, force: :cascade do |t|
+  create_table "colloquy_messages", id: :serial, force: :cascade do |t|
     t.text "message_id"
     t.integer "timestamp"
     t.text "from"
@@ -117,7 +117,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.unique_constraint ["message_id"], name: "colloquy_messages_message_id_key"
   end
 
-  create_table "date_summaries", id: :integer, default: -> { "nextval('dates_id_seq'::regclass)" }, force: :cascade do |t|
+  create_table "date_summaries", id: :serial, force: :cascade do |t|
     t.date "date"
     t.text "event_type"
     t.integer "count"
@@ -173,7 +173,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.unique_constraint ["author_id"], name: "discord_users_author_id_key"
   end
 
-  create_table "email_messages", id: :integer, default: -> { "nextval('emails_id_seq'::regclass)" }, force: :cascade do |t|
+  create_table "email_messages", id: :serial, force: :cascade do |t|
     t.text "account"
     t.timestamptz "timestamp"
     t.text "subject"
@@ -318,7 +318,8 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.unique_constraint ["path"], name: "hindsight_files_path_key"
   end
 
-  create_table "historical_weather_readings", id: :integer, default: -> { "nextval('historical_weather_id_seq'::regclass)" }, force: :cascade do |t|
+
+  create_table "historical_weather_readings", id: :serial, force: :cascade do |t|
     t.decimal "wdir"
     t.decimal "temp"
     t.decimal "maxt"
@@ -443,7 +444,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.text "real_receiver"
   end
 
-  create_table "locations", id: :integer, default: -> { "nextval('additional_locations_id_seq'::regclass)" }, force: :cascade do |t|
+  create_table "locations", id: :serial, force: :cascade do |t|
     t.date "date"
     t.text "name"
     t.text "tz"
@@ -466,7 +467,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["timestamp"], name: "lounge_logs_timestamp_idx"
   end
 
-  create_table "mamirc_events", id: :integer, default: -> { "nextval('mamirc_logs_id_seq'::regclass)" }, force: :cascade do |t|
+  create_table "mamirc_events", id: :serial, force: :cascade do |t|
     t.integer "connection_id"
     t.integer "sequence"
     t.bigint "timestamp"
@@ -549,7 +550,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["timestamp"], name: "mirc_logs_timestamp_idx"
   end
 
-  create_table "n3ds_activity_events", id: :integer, default: -> { "nextval('\"3ds_activity_events_id_seq\"'::regclass)" }, force: :cascade do |t|
+  create_table "n3ds_activity_events", id: :serial, force: :cascade do |t|
     t.text "date"
     t.text "game"
     t.text "play_time"
@@ -559,7 +560,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.index ["date", "game", "console"], name: "n3ds_activity_events_date_game_console_idx", unique: true
   end
 
-  create_table "n3ds_activity_logs", id: :integer, default: -> { "nextval('\"3ds_activity_logs_id_seq\"'::regclass)" }, force: :cascade do |t|
+  create_table "n3ds_activity_logs", id: :serial, force: :cascade do |t|
     t.text "console"
     t.text "game"
     t.text "play_time"
@@ -571,7 +572,7 @@ ActiveRecord::Schema[7.2].define(version: 0) do
     t.integer "average_play_time_minutes"
   end
 
-  create_table "netflix_activities", id: :integer, default: -> { "nextval('netflix_activity_id_seq'::regclass)" }, force: :cascade do |t|
+  create_table "netflix_activities", id: :serial, force: :cascade do |t|
     t.text "title"
     t.text "videoTitle"
     t.integer "movieID"

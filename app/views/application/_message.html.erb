@@ -1,21 +1,32 @@
 <% real_name = Hindsight::Application.credentials.real_name %>
+<% icon = '' %>
 <% if event[:type].start_with?('adium_message') %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = event[:content][:real_sender] %>
   <% message = event[:content][:message].html_safe %>
 <% elsif event[:type].start_with?('android_mms') %>
   <% kind = :sent if event[:content][:sms_type] == "2" %>
-  <% author = "#{event[:content][:contact_name]} (#{event[:content][:address]})" %>
+  <% if kind == :sent %>
+    <% author = "#{real_name}" %>
+  <% else %>
+    <% author = "#{event[:content][:contact_name]} (#{event[:content][:address]})" %>
+  <% end %>
   <% message = raw event[:content][:body] %>
 <% elsif event[:type].start_with?('android_sms') %>
+  <% icon = '<i class="fas fa-sms"></i>' %>
   <% kind = :sent if event[:content][:sms_type] == "2" %>
-  <% author = "#{event[:content][:contact_name]} (#{event[:content][:address]})" %>
+  <% if kind == :sent %>
+    <% author = "#{real_name}" %>
+  <% else %>
+    <% author = "#{event[:content][:contact_name]} (#{event[:content][:address]})" %>
+  <% end %>
   <% message = event[:content][:body] %>
 <% elsif event[:type].start_with?("colloquy_message_") %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = event[:content][:from] %>
   <% message = event[:content][:message] %>
 <% elsif event[:type].start_with?('facebook_message') %>
+  <% icon = '<i class="fab fa-facebook-messenger"></i>' %>
   <% kind = :sent if event[:content].room[:real_name] && (event[:content].room[:real_name] != event[:content][:sender_name]) %>
   <% author = event[:content][:sender_name] %>
   <% message = event[:content][:content] %>
@@ -31,8 +42,13 @@
   <% kind = :sent if event[:content][:real_name] == real_name %>
   <% author = event[:content][:real_name] %>
 <% elsif event[:type].start_with?('iphone_sms') %>
+  <% icon = '<i class="fab fa-apple"></i>' %>
   <% kind = :sent if event[:content][:is_sent] == 1 %>
-  <% author = "#{event[:content][:real_sender]} (#{event[:content][:handle]})" %>
+  <% if kind == :sent %>
+    <% author = "#{event[:content][:real_sender]} (#{event[:content][:destination_caller_id]})" %>
+  <% else %>
+    <% author = "#{event[:content][:real_sender]} (#{event[:content][:handle]})" %>
+  <% end %>
   <% message = event[:content][:text] %>
 <% elsif event[:type].start_with?('mamirc_event') %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
@@ -57,6 +73,7 @@
   <% author = (event[:content][:real_sender] || event[:content][:sender]) %>
   <% message = event[:content][:message].html_safe %>
 <% elsif event[:type].start_with?('skype_message') %>
+  <% icon = '<i class="fab fa-skype"></i>' %>
   <% kind = :sent if event[:content][:real_sender] == real_name %>
   <% author = event[:content][:author] %>
   <% message = raw event[:content][:body_xml] %>
@@ -65,6 +82,7 @@
   <% author = "#{event[:content][:real_name]} (#{event[:content][:contact]})" %>
   <% message = event[:content][:message] %>
 <% elsif event[:type].start_with?('windows_phone_sms') %>
+  <% icon = '<i class="fab fa-windows"></i>' %>
   <% kind = :sent if event[:content][:is_sent] %>
   <% author = "#{event[:content][:real_name]} (#{event[:content][:phone_number]})" %>
   <% message = event[:content]["body"] %>
@@ -72,7 +90,7 @@
 
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
   <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
-    <small><%= author %></small>
+    <small><%= raw icon %> <%= author %></small>
   </p>
 </header>
 <div class="card-body">

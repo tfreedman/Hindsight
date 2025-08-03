@@ -1,16 +1,19 @@
+<% icon = '' %>
 <% if event[:type].start_with?('android_call') %>
+  <% icon = '<i class="fa-solid fa-phone"></i><i class="fa-brands fa-android"></i>' %>
   <% kind = :sent if event[:content][:is_sent] %>
   <% author = "#{event[:content][:contact_name]} (#{event[:content][:number]})" %>
   <% message = '' %>
 <% elsif event[:type].start_with?('iphone_call') %>
-  <% kind = :sent if event[:content][:ZCALLTYPE] == 1 %>
+  <% icon = '<i class="fa-solid fa-phone"></i><i class="fa-brands fa-apple"></i>' %>
+  <% kind = :sent if event[:content][:ZORIGINATED] == 1 %>
   <% author = "#{event[:content][:ZNAME] || 'Unknown'} (#{event[:content][:ZADDRESS]})" %>
   <% message = '' %>
 <% end %>
 
 <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
   <p class="<% if kind == :sent %>sent<% else %>received<% end %>">
-    <small><%= author %></small>
+    <small><%= raw icon %> <%= author %></small>
   </p>
 </header>
 <div class="card-body">

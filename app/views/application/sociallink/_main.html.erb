@@ -1,207 +1,123 @@
-<% begin %>
-  <% if event[:sub_type] == 'youtube_video' %>
-    <% json = JSON.parse(event[:content][:item]) %>
-    <% snpc = ServiceNamePathCache.where(service: 'YouTube', username: event[:content][:channel_id]).first %>
-    <% if snpc %>
-      <% name = snpc.name %>
-    <% else %>
-      <% name = 'TODO: Get Username' %>
-    <% end %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-          <a href="https://www.youtube.com/watch?v=<%= event[:content][:video_id] %>">
-            <i class="fa-brands fa-youtube"></i> <%= name %> - <%= event[:content][:title] %>
-          </a>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p>
-        <%= render 'application/sociallink/youtube_video', post: event, snpc: snpc, json: json %>
-      </p>
-    </div>
-  <% elsif event[:sub_type] == "deviantart_post" %>
-    <% json = JSON.parse(event[:content][:json_dump]) %>
-    <% snpc = ServiceNamePathCache.where(service: 'DeviantArt', username: event[:content][:username].downcase).first %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-            <a href="https://www.deviantart.com/<%= event[:content][:username] %>/art/<%= event[:content][:post_id] %>">
-              <i class="fa-brands fa-deviantart"></i> <%= json["title"] %> - <%= event[:content][:username] %>
-            </a>
-          </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p>
-        <%= render 'application/sociallink/deviantart_post', post: event, snpc: snpc, json: json %>
-      </p>
-    </div>
-  <% elsif event[:sub_type] == "pixiv_post" %>
-    <% snpc = ServiceNamePathCache.where(service: 'Pixiv', username: event[:content][:pixiv_member_id]).first %>
-    <% post_base = '' %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-        <a href="https://www.pixiv.net/en/artworks/<%= event[:content][:post_id] %>"><i class="fa-brands fa-pixiv"></i> <%= snpc.name %> - <%= event[:content][:title] %></a>
-          <% if event[:content][:filenames].count > 1 %>
-            <% post_base = event[:content][:post_id] + '/' %>
-            <span style="float: right">
-              <a data-fancybox-trigger="pixiv_<%= event[:content][:post_id] %>">
-                <%= event[:content][:filenames].count %> <i class="fas fa-layer-group"></i>
-              </a>
-            </span>
-          <% end %>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p>
-        <%= render 'application/sociallink/pixiv_post', post: event, snpc: snpc, post_base: post_base %>
-      <p>
-    </div>
-  <% elsif event[:sub_type] == "webcomic_strip" %>
-    <% snpc = ServiceNamePathCache.where(service: 'Webcomic', username: event[:content][:comic]).first %>
-    <% json = JSON.parse(event[:content][:payload]) %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p class="">
-        <small><i class="fa-solid fa-book-open"></i> <%= snpc.name %>
-          <% if json && json["url"] && json["title"] %>
-            - <a href="<%= json['url'] %>"><em><%= json["title"] %></em></a>
-          <% elsif json && json["title"] %>
-            - <em><%= json["title"] %></em>
-          <% end %>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p>
-        <%= render 'application/sociallink/webcomics_strip', post: event, snpc: snpc, json: json %>
-      </p>
-    </div>
-  <% elsif event[:sub_type] == "facebook_post" %>
-    <% snpc = ServiceNamePathCache.where(service: 'Facebook', username: event[:content].authored_by.fbid).first %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-            <a href="https://facebook.com/<%= event[:content][:fbid] %>">
-              <i class="fa-brands fa-facebook"></i>
-            </a>
-            <% if event[:content].authored_by %>
-              <a href="https://facebook.com/<%= event[:content].authored_by.fbid %>"><%= event[:content].authored_by.payload[:display_name] %></a>:
-            <% end %>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <%= render 'application/sociallink/facebook_post', post: event, snpc: snpc %>
-    </div>
-  <% elsif event[:sub_type] == "instagram_post" %>
-    <% json = JSON.parse(event[:content][:json]) %>
-    <% ig = InstagramAccount.where(instagram_id: event[:content][:instagram_user_id]).first %>
-    <% snpc = ServiceNamePathCache.where(service: 'Instagram', username: "#{ig.username} (#{ig.instagram_id})").first %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-            <a href="https://instagram.com/p/<%= event[:content][:shortcode] %>">
-              <i class="fa-brands fa-instagram"></i> <%= snpc.name %>
-            </a>
-            <% if json['__typename'] == 'GraphSidecar' %>
-              <span style="float: right">
-                <a data-fancybox-trigger="instagram_<%= event[:content][:shortcode] %>"><i class="fas fa-layer-group"></i> <%= json["edge_sidecar_to_children"]["edges"].count %></a>
-              </span>
-            <% end %>
-          </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p class="neutral">
-        <%= render 'application/sociallink/instagram_post', post: event, json: json, snpc: snpc %>
-      </p>
-    </div>
-  <% elsif event[:sub_type] == "instagram_story" %>
-    <% ig = InstagramAccount.where(instagram_id: event[:content][:instagram_user_id]).first %>
-    <% snpc = ServiceNamePathCache.where(service: 'Instagram', username: "#{ig.username} (#{ig.instagram_id})").first %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-          <i class="fa-brands fa-instagram"></i> <i class="far fa-clock"></i> <%= snpc.name %>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p class="neutral">
-        <%= render 'application/sociallink/instagram_story', post: event, snpc: snpc %>
-      </p>
-    </div>
-  <% elsif event[:sub_type] == "tumblr_post" %>
-    <% snpc = ServiceNamePathCache.where(service: 'Tumblr', username: event[:content][:username]).first %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-          <a href=""><i class="fa-brands fa-tumblr"></i> <%= snpc.name %></a>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <%= render 'application/sociallink/tumblr_post', post: event, snpc: snpc %>
-    </div>
-  <% elsif event[:sub_type] == "twitter_tweet" %>
-    <% ta = TwitterAccount.where(user_id: event[:content][:user_id]).first %>
-    <% snpc = ServiceNamePathCache.where(service: 'Twitter', username: ta.username).first %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-          <a href="https://twitter.com/i/status/<%= event[:content][:tweet_id] %>">
-            <i class="fa-brands fa-twitter"></i>
-            <%= ta.username %> <% if event[:content][:is_retweet] %>RT <% if event[:content][:retweet_data] %><%= event[:content][:retweet_data][:username] %><% else %>Unknown<% end %><% end %>
-          </a>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p>
-        <%= render 'application/sociallink/twitter_tweet', post: event, ta: ta, snpc: snpc %>
-      </p>
-    </div>
-  <% elsif event[:sub_type] == "mastodon_toot" %>
-    <% ma = MastodonAccount.where(user_id: event[:content][:user_id]).first %>
-    <% snpc = ServiceNamePathCache.where(service: 'Mastodon', username: ma.username).first %> 
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-          <a href="<%= event[:content][:url] %>">
-            <i class="fa-brands fa-mastodon"></i>
-            <%= event[:content][:account]["username"] %> 
-          </a>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p>
-        <%= render 'application/sociallink/mastodon_toot', post: event, snpc: snpc %>
-      </p>
-    </div>
-  <% elsif event[:sub_type] == "bluesky_post" %>
-    <% ba = BlueskyAccount.where(did: event[:content][:user_did]).first %>
-    <% snpc = ServiceNamePathCache.where(service: 'Bluesky', username: ba.username).first %>
-    <header style="color: <%= colors2(@event_groups[event[:type]]) %>">
-      <p>
-        <small>
-          <a href="https://bsky.app/profile/<%= event[:content][:uri].split('at://')[1].split('/')[0] %>/post/<%= event[:content][:uri].split('/')[-1] %>">
-            <i class="fa-brands fa-bluesky"></i>
-            <%= event[:content][:post]["author"]["displayName"] %>
-          </a>
-        </small>
-      </p>
-    </header>
-    <div class="card-body">
-      <p>
-        <%= render 'application/sociallink/bluesky_post', post: event, snpc: snpc, record: nil %>
-      </p>
-    </div>
+<% if event[:sub_type] == "bluesky_post" %>
+  <% ba = BlueskyAccount.where(did: event[:content][:user_did]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Bluesky', username: ba.username).first %>
+  <% link = "https://bsky.app/profile/#{event[:content][:uri].split('at://')[1].split('/')[0]}/post/#{event[:content][:uri].split('/')[-1]}" %>
+  <% title = "<i class='fa-brands fa-bluesky'></i> #{event[:content][:post]['author']['displayName']}" %>
+<% elsif event[:sub_type] == "deviantart_post" %>
+  <% json = JSON.parse(event[:content][:json_dump]) %>
+  <% snpc = ServiceNamePathCache.where(service: 'DeviantArt', username: event[:content][:username].downcase).first %>
+  <% link = "https://www.deviantart.com/#{event[:content][:username]}/art/#{event[:content][:post_id]}" %>
+  <% title = "<i class='fa-brands fa-deviantart'></i> #{json['title']} - #{event[:content][:username]}" %>
+<% elsif event[:sub_type] == "facebook_post" %>
+  <% snpc = ServiceNamePathCache.where(service: 'Facebook', username: event[:content].authored_by.fbid).first %>
+  <% link = "https://facebook.com/#{event[:content][:fbid]}" %>
+  <% title = "<i class='fa-brands fa-facebook'></i>" %>
+  <% if event[:content].authored_by %>
+    <% alt = "<a href='https://facebook.com/#{event[:content].authored_by.fbid}'>#{event[:content].authored_by.payload[:display_name]}</a>:" %>
   <% end %>
-<% rescue %>
-  <p>Problem parsing post</p>
+<% elsif event[:sub_type] == "instagram_post" %>
+  <% json = JSON.parse(event[:content][:json]) %>
+  <% ig = InstagramAccount.where(instagram_id: event[:content][:instagram_user_id]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Instagram', username: "#{ig.username} (#{ig.instagram_id})").first %>
+  <% link = "https://instagram.com/p/#{event[:content][:shortcode]}" %>
+  <% title = "<i class='fa-brands fa-instagram'></i> #{snpc.name}" %>
+  <% if json['__typename'] == 'GraphSidecar' %>
+    <% title += "<span style='float: right'><a data-fancybox-trigger='instagram_#{event[:content][:shortcode]}'><i class='fas fa-layer-group'></i> #{json['edge_sidecar_to_children']['edges'].count}</a></span>" %>
+  <% end %>
+<% elsif event[:sub_type] == "instagram_story" %>
+  <% ig = InstagramAccount.where(instagram_id: event[:content][:instagram_user_id]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Instagram', username: "#{ig.username} (#{ig.instagram_id})").first %>
+  <% title = "<i class='fa-brands fa-instagram'></i> <i class='far fa-clock'></i> #{snpc.name}" %>
+<% elsif event[:sub_type] == "mastodon_toot" %>
+  <% ma = MastodonAccount.where(user_id: event[:content][:user_id]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Mastodon', username: ma.username).first %>
+  <% link = event[:content][:url] %>
+  <% title = "<i class='fa-brands fa-mastodon'></i> #{event[:content][:account]['username']}" %>
+<% elsif event[:sub_type] == "pixiv_post" %>
+  <% snpc = ServiceNamePathCache.where(service: 'Pixiv', username: event[:content][:pixiv_member_id]).first %>
+  <% post_base = '' %>
+  <% link = "https://www.pixiv.net/en/artworks/#{event[:content][:post_id]}" %>
+  <% title = "<i class='fa-brands fa-pixiv'></i> #{snpc.name} - #{event[:content][:title]}" %>
+  <% if event[:content][:filenames].count > 1 %>
+    <% post_base = event[:content][:post_id] + '/' %>
+    <% alt = "<span style='float: right'><a data-fancybox-trigger='pixiv_#{event[:content][:post_id]}'>#{event[:content][:filenames].count}<i class='fas fa-layer-group'></i></a></span>" %>
+  <% end %>
+<% elsif event[:sub_type] == "tumblr_post" %>
+  <% snpc = ServiceNamePathCache.where(service: 'Tumblr', username: event[:content][:username]).first %>
+  <% title = "<i class='fa-brands fa-tumblr'></i> #{snpc.name}" %>
+<% elsif event[:sub_type] == "twitter_tweet" %>
+  <% ta = TwitterAccount.where(user_id: event[:content][:user_id]).first %>
+  <% snpc = ServiceNamePathCache.where(service: 'Twitter', username: ta.username).first %>
+  <% link = "https://twitter.com/i/status/#{event[:content][:tweet_id]}" %>
+  <% title = "<i class='fa-brands fa-twitter'></i> #{ta.username}" %>
+  <% if event[:content][:is_retweet] %>
+    <% title += ' RT ' %>
+    <% if event[:content][:retweet_data] %>
+      <% title += event[:content][:retweet_data][:username] %>
+    <% else %>
+      <% title += 'Unknown' %>
+    <% end %>
+  <% end %>
+<% elsif event[:sub_type] == "webcomic_strip" %>
+  <% snpc = ServiceNamePathCache.where(service: 'Webcomic', username: event[:content][:comic]).first %>
+  <% json = JSON.parse(event[:content][:payload]) %>
+  <% link = '' %>
+  <% title = "<i class='fa-solid fa-book-open'></i> #{snpc.name}" %>
+  <% if json && json["url"] && json["title"] %>
+    <% title += " - <a href='#{json['url']}'><em>#{json['title']}</em></a>" %>
+  <% elsif json && json["title"] %>
+    <% title += " - <em>#{json['title']}</em>" %>
+  <% end %>
+<% elsif event[:sub_type] == 'youtube_video' %>
+  <% json = JSON.parse(event[:content][:item]) %>
+  <% snpc = ServiceNamePathCache.where(service: 'YouTube', username: event[:content][:channel_id]).first %>
+  <% if snpc %>
+    <% name = snpc.name %>
+  <% else %>
+    <% name = 'TODO: Get Username' %>
+  <% end %>
+  <% link = "https://www.youtube.com/watch?v=#{event[:content][:video_id]}" %>
+  <% title = "<i class='fa-brands fa-youtube'></i> #{name} - #{event[:content][:title]}" %>
 <% end %>
+
+<header style="color: <%= colors2(@event_groups[event[:type]]) %>">
+  <p>
+    <small>
+      <a href="<%= link %>">
+        <%= raw title %>
+      </a>
+      <% if alt %>
+        <%= raw alt %>
+      <% end %>
+    </small>
+  </p>
+</header>
+<div class="card-body">
+  <p>
+    <% if event[:sub_type] == "bluesky_post" %>
+      <%= render 'application/sociallink/bluesky_post', post: event, snpc: snpc, record: nil %>
+    <% elsif event[:sub_type] == "deviantart_post" %>
+      <%= render 'application/sociallink/deviantart_post', post: event, snpc: snpc, json: json %>
+    <% elsif event[:sub_type] == "facebook_post" %>
+      <%= render 'application/sociallink/facebook_post', post: event, snpc: snpc %>
+    <% elsif event[:sub_type] == "instagram_post" %>
+      <%= render 'application/sociallink/instagram_post', post: event, json: json, snpc: snpc %>
+    <% elsif event[:sub_type] == "instagram_story" %>
+      <%= render 'application/sociallink/instagram_story', post: event, snpc: snpc %>
+    <% elsif event[:sub_type] == "mastodon_toot" %>
+      <%= render 'application/sociallink/mastodon_toot', post: event, snpc: snpc %>
+    <% elsif event[:sub_type] == "pixiv_post" %>
+      <%= render 'application/sociallink/pixiv_post', post: event, snpc: snpc, post_base: post_base %>
+    <% elsif event[:sub_type] == "tumblr_post" %>
+      <%= render 'application/sociallink/tumblr_post', post: event, snpc: snpc %>
+    <% elsif event[:sub_type] == "twitter_tweet" %>
+      <%= render 'application/sociallink/twitter_tweet', post: event, ta: ta, snpc: snpc %>
+    <% elsif event[:sub_type] == "webcomic_strip" %>
+      <%= render 'application/sociallink/webcomics_strip', post: event, snpc: snpc, json: json %>
+    <% elsif event[:sub_type] == "youtube_video" %>
+      <%= render 'application/sociallink/youtube_video', post: event, snpc: snpc, json: json %>
+    <% else %>
+      Missing template for sub_type <%= event[:sub_type] %>
+    <% end %>
+  </p>
+</div>

@@ -328,7 +328,7 @@ class ApplicationController < ActionController::Base
         @events << {sort_time: Time.at(f.timestamp), type: 'sociallink', sub_type: 'facebook_post', content: f}
       end
 
-      webcomic_strips = Webcomic.where(date: @date).all
+      webcomic_strips = Webcomic.where(date: @date, enabled: true).all
       webcomic_strips.each do |w|
         @events << {sort_time: w.date.beginning_of_day, type: 'sociallink', sub_type: 'webcomic_strip', content: w}
       end

@@ -11,7 +11,7 @@ module Hindsight
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
-    config.time_zone = File.read("/etc/timezone").chomp
+    config.time_zone = `timedatectl show --va -p Timezone`.strip
     config.active_record.default_timezone = :local
 
     # Configuration for the application, engines, and railties goes here.
